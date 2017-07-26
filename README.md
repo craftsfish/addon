@@ -1,2 +1,2 @@
 # addon
-firefox addon
+firefox addon for alipay
