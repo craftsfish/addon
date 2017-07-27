@@ -8,7 +8,7 @@
   },
 
   "permissions": [
-    "https://sz.jd.com/index.html",
+    "https://sz.jd.com/realTime/realTop.html",
     "activeTab",
     "tabs"
   ],  

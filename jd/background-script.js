@@ -32,9 +32,11 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
   if (changeInfo.status == "complete") { /* loading complete */
     console.log("Load completes.");
     console.log(tabInfo);
-    if (tabInfo.url == "https://sz.jd.com/index.html") {
+    if (tabInfo.url == "https://sz.jd.com/realTime/realTop.html") {
       console.log("JD sz is loaded.");
-      var executing = browser.tabs.executeScript(null, {file: "content-script-sz.js"});
+      var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
+      executing.then(onExecuted, onError);
+      executing = browser.tabs.executeScript(null, {file: "content-script-sz.js"});
       executing.then(onExecuted, onError);
     }
   }
@@ -43,7 +45,7 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
 browser.tabs.onUpdated.addListener(onTabsUpdated);
 
 /*
- * Communication Channel
+ * Communication Channel for SZ
  */
 var portFromSZ;
 
@@ -55,7 +57,7 @@ function onSZMsg(m) {
 function connected(p) {
   if (p.name == "port-from-sz") {
     portFromSZ = p;
-    portFromSZ.postMessage({greeting: "hi there content script!"});
+    portFromSZ.postMessage({query: "rate"});
     portFromSZ.onMessage.addListener(onSZMsg);
   }
 }
