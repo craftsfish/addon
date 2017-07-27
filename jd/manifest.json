@@ -9,12 +9,16 @@
   },
 
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "tabs"
   ],  
+
+  "background": {
+    "scripts": ["background-script.js"]
+  },
 
   "browser_action": {
     "default_icon": "icons/beasts-32.png",
     "default_title": "JD"
   }
-  
 }
