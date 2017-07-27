@@ -1,5 +1,4 @@
 {
-
   "description": "Automatically handle orders of JD",
   "manifest_version": 2,
   "name": "JD",
@@ -9,6 +8,7 @@
   },
 
   "permissions": [
+    "https://sz.jd.com/index.html",
     "activeTab",
     "tabs"
   ],  
