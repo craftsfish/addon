@@ -11,6 +11,7 @@
     "https://sz.jd.com/realTime/realTop.html",
     "https://sz.jd.com/realTime/*",
     "https://item.jd.com/*",
+    "http://www.dasbu.com/seller",
     "activeTab",
     "tabs",
     "alarms"

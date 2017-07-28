@@ -28,6 +28,8 @@ function onError(error) {
 }
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
+  console.log(changeInfo);
+  console.log(tabInfo);
   if (changeInfo.status == "complete") { /* loading complete */
     if (tabInfo.url == "https://sz.jd.com/realTime/realTop.html") {
       console.log("JD sz is loaded.");
@@ -41,6 +43,12 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
       var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
       executing.then(onExecuted, onError);
       executing = browser.tabs.executeScript(null, {file: "content-script-item.js"});
+      executing.then(onExecuted, onError);
+    } else if (tabInfo.url.search(/http:\/\/www.dasbu.com\/seller/) != -1) {
+      console.log("SD is loaded.");
+      var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
+      executing.then(onExecuted, onError);
+      executing = browser.tabs.executeScript(null, {file: "content-script-sd.js"});
       executing.then(onExecuted, onError);
     }
   }
@@ -97,6 +105,18 @@ function onItemDisconnect(p)
   portFromItem = undefined;
 }
 
+var portFromSD;
+
+function onSDMsg(m) {
+  console.log("In background script, received message from SD");
+  console.log(m);
+}
+
+function onSDDisconnect(p)
+{
+  portFromSD = undefined;
+}
+
 function connected(p) {
   if (p.name == "port-from-sz") {
     portFromSZ = p;
@@ -107,6 +127,11 @@ function connected(p) {
     portFromItem.onDisconnect.addListener(onItemDisconnect);
     portFromItem.onMessage.addListener(onItemMsg);
     portFromItem.postMessage("hello there item");
+  } else if (p.name == "port-from-sd") {
+    portFromSD = p;
+    portFromSD.onDisconnect.addListener(onSDDisconnect);
+    portFromSD.onMessage.addListener(onSDMsg);
+    portFromSD.postMessage("hello there sd");
   }
 }
 
