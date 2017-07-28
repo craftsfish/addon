@@ -6,7 +6,7 @@ var itemTab;
  */
 function onBrowserActionClicked(tab) {
   if (next == "") {
-    next = "publish order";
+    next = "query rate";
     console.log("JD pluging starts.");
     console.log(tab);
   }
@@ -27,15 +27,19 @@ function onError(error) {
   console.log(error);
 }
 
+var SZ = new Object();
+SZ.regexp = new RegExp("^https:\/\/sz.jd.com\/realTime\/realTop.html$");
+SZ.contentscript = "content-script-sz.js";
+
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   console.log(changeInfo);
   console.log(tabInfo);
   if (changeInfo.status == "complete") { /* loading complete */
-    if (tabInfo.url == "https://sz.jd.com/realTime/realTop.html") {
+    if (tabInfo.url.match(SZ.regexp) != null) {
       console.log("JD sz is loaded.");
       var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
       executing.then(onExecuted, onError);
-      executing = browser.tabs.executeScript(null, {file: "content-script-sz.js"});
+      executing = browser.tabs.executeScript(null, {file: SZ.contentscript});
       executing.then(onExecuted, onError);
     } else if (tabInfo.url.search(/https:\/\/item.jd.com\//) != -1) {
       itemTab = tabId;
@@ -163,8 +167,8 @@ browser.runtime.onConnect.addListener(connected);
 /*
  * periodic task
  */
-const delayInMinutes = 0.2;
-const periodInMinutes = 0.2;
+const delayInMinutes = 0.1;
+const periodInMinutes = 0.1;
 browser.alarms.create("my-periodic-alarm", {
   delayInMinutes,
   periodInMinutes
