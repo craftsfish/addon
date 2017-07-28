@@ -61,7 +61,7 @@ function onSZMsg(m) {
   } else if (m.reply == "no item") {
     /* do nothing */
   } else if (m.reply == "detail") {
-    next = "query xetail"
+    next = "query skuname"
     /* do nothing */
   } else {
     console.log("Unhandled msg from SZ.");
@@ -79,6 +79,14 @@ var portFromItem;
 function onItemMsg(m) {
   console.log("In background script, received message from item");
   console.log(m);
+  if (m.reply == "skuname") {
+    next = "sku image load";
+    console.log(m.data);
+  } else if (m.reply == "skuimageload") {
+    next = "sku image";
+  } else if (m.reply == "skuimage") {
+    console.log(m.data);
+  }
 }
 
 function onItemDisconnect(p)
@@ -121,6 +129,21 @@ function handleAlarm(alarmInfo) {
   } else if (next == "query detail") {
     if (portFromSZ != undefined) {
       portFromSZ.postMessage({query: "detail"});
+      next = "";
+    }
+  } else if (next == "query skuname") {
+    if (portFromItem != undefined) {
+      portFromItem.postMessage({query: "skuname"});
+      next = "";
+    }
+  } else if (next == "sku image load") {
+    if (portFromItem != undefined) {
+      portFromItem.postMessage({query: "skuimageload"});
+      next = "";
+    }
+  } else if (next == "sku image") {
+    if (portFromItem != undefined) {
+      portFromItem.postMessage({query: "skuimage"});
       next = "";
     }
   }
