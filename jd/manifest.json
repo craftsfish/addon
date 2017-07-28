@@ -9,8 +9,11 @@
 
   "permissions": [
     "https://sz.jd.com/realTime/realTop.html",
+    "https://sz.jd.com/realTime/*",
+    "http://www.example.org/example.txt",
     "activeTab",
-    "tabs"
+    "tabs",
+    "alarms"
   ],  
 
   "background": {

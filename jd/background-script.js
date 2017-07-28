@@ -1,15 +1,15 @@
-var running = 0;
+var next = ""; /* next instruction */
 
 /*
  * Browser Action Handling
  */
 function onBrowserActionClicked(tab) {
-  if (running == 0) {
-    running = 1;
+  if (next == "") {
+    next = "query rate";
     console.log("JD pluging starts.");
     console.log(tab);
   } else {
-    running = 0;
+    next = "";
     console.log("JD pluging stops.");
     console.log(tab);
   }
@@ -52,14 +52,47 @@ var portFromSZ;
 function onSZMsg(m) {
   console.log("In background script, received message from SZ");
   console.log(m);
+  if (m.reply == "found item") {
+    next = "query detail";
+  } else if (m.reply == "try again") {
+    console.log("handle command later");
+    console.log(next);
+  } else if (m.reply == "no item") {
+    next = "";
+  } else if (m.reply == "detail") {
+    next = "";
+  } else {
+    console.log("Unhandled msg from SZ.");
+    console.log(m);
+  }
 }
 
 function connected(p) {
   if (p.name == "port-from-sz") {
     portFromSZ = p;
-    portFromSZ.postMessage({query: "rate"});
     portFromSZ.onMessage.addListener(onSZMsg);
   }
 }
 
 browser.runtime.onConnect.addListener(connected);
+
+/*
+ * periodic task
+ */
+const delayInMinutes = 1;
+const periodInMinutes = 1;
+browser.alarms.create("my-periodic-alarm", {
+  delayInMinutes,
+  periodInMinutes
+});
+
+function handleAlarm(alarmInfo) {
+  console.log("on alarm: " + alarmInfo.name);
+  if (next == "query rate") {
+    portFromSZ.postMessage({query: "rate"});
+  } else if (next == "query detail") {
+    portFromSZ.postMessage({query: "detail"});
+  }
+}
+
+browser.alarms.onAlarm.addListener(handleAlarm);
