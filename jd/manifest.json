@@ -10,7 +10,7 @@
   "permissions": [
     "https://sz.jd.com/realTime/realTop.html",
     "https://sz.jd.com/realTime/*",
-    "http://www.example.org/example.txt",
+    "https://item.jd.com/*",
     "activeTab",
     "tabs",
     "alarms"

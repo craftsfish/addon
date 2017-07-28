@@ -34,6 +34,12 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
       executing.then(onExecuted, onError);
       executing = browser.tabs.executeScript(null, {file: "content-script-sz.js"});
       executing.then(onExecuted, onError);
+    } else if (tabInfo.url.search(/https:\/\/item.jd.com\//) != -1) {
+      console.log("JD item is loaded.");
+      var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
+      executing.then(onExecuted, onError);
+      executing = browser.tabs.executeScript(null, {file: "content-script-item.js"});
+      executing.then(onExecuted, onError);
     }
   }
 }
@@ -41,7 +47,7 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
 browser.tabs.onUpdated.addListener(onTabsUpdated);
 
 /*
- * Communication Channel for SZ
+ * Communication Channel
  */
 var portFromSZ;
 
@@ -68,11 +74,28 @@ function onSZDisconnect(p)
   portFromSZ = undefined;
 }
 
+var portFromItem;
+
+function onItemMsg(m) {
+  console.log("In background script, received message from item");
+  console.log(m);
+}
+
+function onItemDisconnect(p)
+{
+  portFromItem = undefined;
+}
+
 function connected(p) {
   if (p.name == "port-from-sz") {
     portFromSZ = p;
     portFromSZ.onDisconnect.addListener(onSZDisconnect);
     portFromSZ.onMessage.addListener(onSZMsg);
+  } else if (p.name == "port-from-item") {
+    portFromItem = p;
+    portFromItem.onDisconnect.addListener(onItemDisconnect);
+    portFromItem.onMessage.addListener(onItemMsg);
+    portFromItem.postMessage("hello there item");
   }
 }
 
@@ -81,8 +104,8 @@ browser.runtime.onConnect.addListener(connected);
 /*
  * periodic task
  */
-const delayInMinutes = 1;
-const periodInMinutes = 1;
+const delayInMinutes = 0.2;
+const periodInMinutes = 0.2;
 browser.alarms.create("my-periodic-alarm", {
   delayInMinutes,
   periodInMinutes
@@ -91,11 +114,15 @@ browser.alarms.create("my-periodic-alarm", {
 function handleAlarm(alarmInfo) {
   console.log("on alarm: " + alarmInfo.name);
   if (next == "query rate") {
-    portFromSZ.postMessage({query: "rate"});
-    next = "";
+    if (portFromSZ != undefined) {
+      portFromSZ.postMessage({query: "rate"});
+      next = "";
+    }
   } else if (next == "query detail") {
-    portFromSZ.postMessage({query: "detail"});
-    next = "";
+    if (portFromSZ != undefined) {
+      portFromSZ.postMessage({query: "detail"});
+      next = "";
+    }
   }
 }
 

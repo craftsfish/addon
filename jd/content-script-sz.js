@@ -3,7 +3,7 @@ console.log("content script of sz is loaded!");
 var item = 5;
 
 var myPort = browser.runtime.connect({name:"port-from-sz"});
-myPort.postMessage({greeting: "hello from content script"});
+myPort.postMessage({greeting: "hello from SZ script"});
 
 myPort.onMessage.addListener(onBGMsg);
 
