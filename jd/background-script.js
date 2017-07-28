@@ -6,7 +6,7 @@ var itemTab;
  */
 function onBrowserActionClicked(tab) {
   if (next == "") {
-    next = "query rate";
+    next = "publish order";
     console.log("JD pluging starts.");
     console.log(tab);
   }
@@ -43,6 +43,12 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
       var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
       executing.then(onExecuted, onError);
       executing = browser.tabs.executeScript(null, {file: "content-script-item.js"});
+      executing.then(onExecuted, onError);
+    } else if (tabInfo.url.search(/http:\/\/www.dasbu.com\/seller\/renwu\/create\?step=1/) != -1) {
+      console.log("Publisher 1 is loaded.");
+      var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
+      executing.then(onExecuted, onError);
+      executing = browser.tabs.executeScript(null, {file: "content-script-publisher-1.js"});
       executing.then(onExecuted, onError);
     } else if (tabInfo.url.search(/http:\/\/www.dasbu.com\/seller/) != -1) {
       console.log("SD is loaded.");
@@ -117,6 +123,18 @@ function onSDDisconnect(p)
   portFromSD = undefined;
 }
 
+var portFromPublisher1;
+
+function onPublisher1Msg(m) {
+  console.log("In background script, received message from Publisher1");
+  console.log(m);
+}
+
+function onPublisher1Disconnect(p)
+{
+  portFromPublisher1 = undefined;
+}
+
 function connected(p) {
   if (p.name == "port-from-sz") {
     portFromSZ = p;
@@ -132,6 +150,11 @@ function connected(p) {
     portFromSD.onDisconnect.addListener(onSDDisconnect);
     portFromSD.onMessage.addListener(onSDMsg);
     portFromSD.postMessage("hello there sd");
+  } else if (p.name == "port-from-publisher-1") {
+    portFromPublisher1 = p;
+    portFromPublisher1.onDisconnect.addListener(onPublisher1Disconnect);
+    portFromPublisher1.onMessage.addListener(onPublisher1Msg);
+    portFromPublisher1.postMessage("hello there sd");
   }
 }
 
@@ -177,6 +200,12 @@ function handleAlarm(alarmInfo) {
   } else if (next == "item close") {
     browser.tabs.remove(itemTab);
     itemTab = undefined;
+    next = "publish order"
+  } else if (next == "publish order") {
+    if (portFromSD != undefined) {
+      portFromSD.postMessage({query: "publish load"});
+      next = "";
+    }
   }
 }
 
