@@ -30,6 +30,9 @@ function onError(error) {
 var SZ = new Object();
 SZ.regexp = new RegExp("^https:\/\/sz.jd.com\/realTime\/realTop.html$");
 SZ.contentscript = "content-script-sz.js";
+var Item = new Object();
+Item.regexp = new RegExp("^https:\/\/item.jd.com\/.*$");
+Item.contentscript = "content-script-item.js";
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   console.log(changeInfo);
@@ -41,12 +44,12 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
       executing.then(onExecuted, onError);
       executing = browser.tabs.executeScript(null, {file: SZ.contentscript});
       executing.then(onExecuted, onError);
-    } else if (tabInfo.url.search(/https:\/\/item.jd.com\//) != -1) {
+    } else if (tabInfo.url.match(Item.regexp) != null) {
       itemTab = tabId;
       console.log("JD item is loaded.");
       var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
       executing.then(onExecuted, onError);
-      executing = browser.tabs.executeScript(null, {file: "content-script-item.js"});
+      executing = browser.tabs.executeScript(null, {file: Item.contentscript});
       executing.then(onExecuted, onError);
     } else if (tabInfo.url.search(/http:\/\/www.dasbu.com\/seller\/renwu\/create\?step=1/) != -1) {
       console.log("Publisher 1 is loaded.");
