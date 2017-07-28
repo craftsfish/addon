@@ -27,49 +27,29 @@ function onError(error) {
   console.log(error);
 }
 
-var SZ = new Object();
-SZ.regexp = new RegExp("^https:\/\/sz.jd.com\/realTime\/realTop.html$");
-SZ.contentscript = "content-script-sz.js";
-var Item = new Object();
-Item.regexp = new RegExp("^https:\/\/item.jd.com\/.*$");
-Item.contentscript = "content-script-item.js";
-var TMonitor = new Object(); /* check status of fake order */
-TMonitor.regexp = new RegExp("^http:\/\/www.dasbu.com\/seller$");
-TMonitor.contentscript = "content-script-sd.js";
-var TPublisher1 = new Object(); /* task publisher step 1 */
-TPublisher1.regexp = new RegExp("^http:\/\/www.dasbu.com\/seller\/renwu\/create\\\?step=1$");
-TPublisher1.contentscript = "content-script-publisher-1.js";
-
+var Pages = [
+  {name:"ShangZhi", regexp: new RegExp("^https:\/\/sz.jd.com\/realTime\/realTop.html$"), script: "content-script-sz.js"},
+  {name:"Item", regexp: new RegExp("^https:\/\/item.jd.com\/.*$"), script: "content-script-item.js"},
+  {name:"TMonitor", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller$"), script: "content-script-sd.js"},
+  {name:"TPublisher", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/renwu\/create\\\?step=1$"), script: "content-script-publisher-1.js"}
+];
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   console.log(changeInfo);
   console.log(tabInfo);
   if (changeInfo.status == "complete") { /* loading complete */
-    if (tabInfo.url.match(SZ.regexp) != null) {
-      console.log("JD sz is loaded.");
-      var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
-      executing.then(onExecuted, onError);
-      executing = browser.tabs.executeScript(null, {file: SZ.contentscript});
-      executing.then(onExecuted, onError);
-    } else if (tabInfo.url.match(Item.regexp) != null) {
-      itemTab = tabId;
-      console.log("JD item is loaded.");
-      var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
-      executing.then(onExecuted, onError);
-      executing = browser.tabs.executeScript(null, {file: Item.contentscript});
-      executing.then(onExecuted, onError);
-    } else if (tabInfo.url.match(TPublisher1.regexp) != null) {
-      console.log("Publisher 1 is loaded.");
-      var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
-      executing.then(onExecuted, onError);
-      executing = browser.tabs.executeScript(null, {file: TPublisher1.contentscript});
-      executing.then(onExecuted, onError);
-    } else if (tabInfo.url.match(TMonitor.regexp) != null) {
-      console.log("SD is loaded.");
-      var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
-      executing.then(onExecuted, onError);
-      executing = browser.tabs.executeScript(null, {file: TMonitor.contentscript});
-      executing.then(onExecuted, onError);
+    var i = 0;
+    for (i=0; i<Pages.length; i++) {
+      if (tabInfo.url.match(Pages[i].regexp) != null) {
+        console.log("============================= load script for page : " + Pages[i].name);
+        var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
+        executing.then(onExecuted, onError);
+        executing = browser.tabs.executeScript(null, {file: Pages[i].script});
+        executing.then(onExecuted, onError);
+        if (Pages[i].name == "Item") {
+          itemTab = tabId;
+        }
+      }
     }
   }
 }
@@ -102,6 +82,7 @@ function onSZMsg(m) {
 function onSZDisconnect(p)
 {
   portFromSZ = undefined;
+  console.log("============================portFromSZ is null");
 }
 
 var portFromItem;
@@ -154,6 +135,7 @@ function connected(p) {
     portFromSZ = p;
     portFromSZ.onDisconnect.addListener(onSZDisconnect);
     portFromSZ.onMessage.addListener(onSZMsg);
+    console.log(portFromSZ);
   } else if (p.name == "port-from-item") {
     portFromItem = p;
     portFromItem.onDisconnect.addListener(onItemDisconnect);
@@ -186,6 +168,7 @@ browser.alarms.create("my-periodic-alarm", {
 
 function handleAlarm(alarmInfo) {
   console.log("on alarm: " + alarmInfo.name);
+  console.log(next);
   if (next == "query rate") {
     if (portFromSZ != undefined) {
       portFromSZ.postMessage({query: "rate"});
