@@ -1,4 +1,5 @@
 var next = ""; /* next instruction */
+var itemTab;
 
 /*
  * Browser Action Handling
@@ -35,6 +36,7 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
       executing = browser.tabs.executeScript(null, {file: "content-script-sz.js"});
       executing.then(onExecuted, onError);
     } else if (tabInfo.url.search(/https:\/\/item.jd.com\//) != -1) {
+      itemTab = tabId;
       console.log("JD item is loaded.");
       var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
       executing.then(onExecuted, onError);
@@ -86,6 +88,7 @@ function onItemMsg(m) {
     next = "sku image";
   } else if (m.reply == "skuimage") {
     console.log(m.data);
+    next = "item close";
   }
 }
 
@@ -146,6 +149,9 @@ function handleAlarm(alarmInfo) {
       portFromItem.postMessage({query: "skuimage"});
       next = "";
     }
+  } else if (next == "item close") {
+    browser.tabs.remove(itemTab);
+    itemTab = undefined;
   }
 }
 
