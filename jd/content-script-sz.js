@@ -36,7 +36,6 @@ function onBGMsg(m) {
       if (i < 5) {
         console.log("Planning to manipulate item " + i.toString());
         item = i;
-        $("tbody tr:eq(" + i.toString() + ") td:eq(0) a:eq(1)")[0].click();
         myPort.postMessage({reply: "found item", data: i.toString()});
       } else {
         myPort.postMessage({reply: "no item"});

@@ -8,10 +8,6 @@ function onBrowserActionClicked(tab) {
     next = "query rate";
     console.log("JD pluging starts.");
     console.log(tab);
-  } else {
-    next = "";
-    console.log("JD pluging stops.");
-    console.log(tab);
   }
 }
 
@@ -21,17 +17,17 @@ browser.browserAction.onClicked.addListener(onBrowserActionClicked);
  * Tabs Updated Handling
  */
 function onExecuted(result) {
-  console.log("Successfully executed! ${result}");
+  console.log("Success: executeScript.");
+  console.log(result);
 }
 
 function onError(error) {
+  console.log("Error: executeScript.");
   console.log(error);
 }
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   if (changeInfo.status == "complete") { /* loading complete */
-    console.log("Load completes.");
-    console.log(tabInfo);
     if (tabInfo.url == "https://sz.jd.com/realTime/realTop.html") {
       console.log("JD sz is loaded.");
       var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
@@ -55,21 +51,27 @@ function onSZMsg(m) {
   if (m.reply == "found item") {
     next = "query detail";
   } else if (m.reply == "try again") {
-    console.log("handle command later");
-    console.log(next);
+    next = "query rate"
   } else if (m.reply == "no item") {
-    next = "";
+    /* do nothing */
   } else if (m.reply == "detail") {
-    next = "";
+    next = "query xetail"
+    /* do nothing */
   } else {
     console.log("Unhandled msg from SZ.");
     console.log(m);
   }
 }
 
+function onSZDisconnect(p)
+{
+  portFromSZ = undefined;
+}
+
 function connected(p) {
   if (p.name == "port-from-sz") {
     portFromSZ = p;
+    portFromSZ.onDisconnect.addListener(onSZDisconnect);
     portFromSZ.onMessage.addListener(onSZMsg);
   }
 }
@@ -90,8 +92,10 @@ function handleAlarm(alarmInfo) {
   console.log("on alarm: " + alarmInfo.name);
   if (next == "query rate") {
     portFromSZ.postMessage({query: "rate"});
+    next = "";
   } else if (next == "query detail") {
     portFromSZ.postMessage({query: "detail"});
+    next = "";
   }
 }
 
