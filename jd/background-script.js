@@ -33,6 +33,13 @@ SZ.contentscript = "content-script-sz.js";
 var Item = new Object();
 Item.regexp = new RegExp("^https:\/\/item.jd.com\/.*$");
 Item.contentscript = "content-script-item.js";
+var TMonitor = new Object(); /* check status of fake order */
+TMonitor.regexp = new RegExp("^http:\/\/www.dasbu.com\/seller$");
+TMonitor.contentscript = "content-script-sd.js";
+var TPublisher1 = new Object(); /* task publisher step 1 */
+TPublisher1.regexp = new RegExp("^http:\/\/www.dasbu.com\/seller\/renwu\/create\\\?step=1$");
+TPublisher1.contentscript = "content-script-publisher-1.js";
+
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   console.log(changeInfo);
@@ -51,17 +58,17 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
       executing.then(onExecuted, onError);
       executing = browser.tabs.executeScript(null, {file: Item.contentscript});
       executing.then(onExecuted, onError);
-    } else if (tabInfo.url.search(/http:\/\/www.dasbu.com\/seller\/renwu\/create\?step=1/) != -1) {
+    } else if (tabInfo.url.match(TPublisher1.regexp) != null) {
       console.log("Publisher 1 is loaded.");
       var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
       executing.then(onExecuted, onError);
-      executing = browser.tabs.executeScript(null, {file: "content-script-publisher-1.js"});
+      executing = browser.tabs.executeScript(null, {file: TPublisher1.contentscript});
       executing.then(onExecuted, onError);
-    } else if (tabInfo.url.search(/http:\/\/www.dasbu.com\/seller/) != -1) {
+    } else if (tabInfo.url.match(TMonitor.regexp) != null) {
       console.log("SD is loaded.");
       var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
       executing.then(onExecuted, onError);
-      executing = browser.tabs.executeScript(null, {file: "content-script-sd.js"});
+      executing = browser.tabs.executeScript(null, {file: TMonitor.contentscript});
       executing.then(onExecuted, onError);
     }
   }
