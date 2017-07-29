@@ -2,7 +2,8 @@ var PC = 0;
 var Instructions = [
   {name: "idle", instruction: "", target: ""},					/* 1 */
   {name: "open detail", instruction: "load", target: "FakeOrder"},
-  {name: "get order id", instruction: "getOrderID", target: "Detail"}
+  {name: "get order id", instruction: "getOrderID", target: "Detail"},
+  {name: "close detail", instruction: "closeDetail", target: "Background"}
 ];
 
 /*
@@ -80,7 +81,7 @@ function onDetailMsg(m) {
   console.log(m);
 
   if (m.reply == "orderID") {
-    console.log(getPage("Detail").tabId);
+    PC = 3;
   }
 }
 
@@ -122,9 +123,15 @@ function handleAlarm(alarmInfo) {
 
   /* get target page */
   var i = Instructions[PC];
-  console.log(i);
-  var p = getPage(i.target);
 
+  if (i.target == "Background") { /* background message */
+    if (i.instruction == "closeDetail") {
+      browser.tabs.remove(getPage("Detail").tabId);
+      PC = 0;
+    }
+  }
+
+  var p = getPage(i.target);
   if (p == undefined) {
     return;
   }
