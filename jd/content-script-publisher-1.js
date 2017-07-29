@@ -1,11 +1,16 @@
-console.log("content script of publisher 1 is loaded!");
+const ID = "TPublisher1";
+console.log("content script of " + ID + " is loaded!");
 
-var myPort = browser.runtime.connect({name:"port-from-publisher-1"});
-myPort.postMessage({greeting: "hello from publisher 1 script"});
-
+var myPort = browser.runtime.connect({name: ID});
+function sendMsg(m)
+{
+  m.id = ID;
+  myPort.postMessage(m);
+}
+sendMsg({greeting: "hello from " + ID + " script"});
 myPort.onMessage.addListener(onBGMsg);
 
 function onBGMsg(m) {
-  console.log("In publisher 1 script, received message from background script: ");
+  console.log("In " + ID + " script, received message from background script: ");
   console.log(m);
 }

@@ -30,9 +30,12 @@ function onError(error) {
 var Pages = [
   {name:"ShangZhi", regexp: new RegExp("^https:\/\/sz.jd.com\/realTime\/realTop.html$"), script: "content-script-sz.js", port: undefined,
     onMsg: onSZMsg, onDisconnect: onSZDisconnect},
-  {name:"Item", regexp: new RegExp("^https:\/\/item.jd.com\/.*$"), script: "content-script-item.js", port: undefined},
-  {name:"TMonitor", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller$"), script: "content-script-sd.js", port: undefined},
-  {name:"TPublisher", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/renwu\/create\\\?step=1$"), script: "content-script-publisher-1.js", port: undefined}
+  {name:"Item", regexp: new RegExp("^https:\/\/item.jd.com\/.*$"), script: "content-script-item.js", port: undefined,
+    onMsg: onItemMsg, onDisconnect: onItemDisconnect},
+  {name:"TMonitor", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller$"), script: "content-script-sd.js", port: undefined,
+    onMsg: onTMonitorMsg, onDisconnect: onTMonitorDisconnect},
+  {name:"TPublisher1", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/renwu\/create\\\?step=1$"), script: "content-script-publisher-1.js", port: undefined,
+    onMsg: onTPublisher1Msg, onDisconnect: onTPublisher1Disconnect}
 ];
 
 function getPage(name) {
@@ -90,7 +93,7 @@ function onSZMsg(m) {
 
 function onSZDisconnect(p)
 {
-  getPage("ShangZhi").port = undefined.
+  getPage("ShangZhi").port = undefined;
   console.log("============================portFromSZ is null");
 }
 
@@ -112,19 +115,21 @@ function onItemMsg(m) {
 
 function onItemDisconnect(p)
 {
-  portFromItem = undefined;
+  getPage("Item").port = undefined;
+  console.log("============================portFromItem is null");
 }
 
 var portFromSD;
 
-function onSDMsg(m) {
-  console.log("In background script, received message from SD");
+function onTMonitorMsg(m) {
+  console.log("In background script, received message from TMonitor");
   console.log(m);
 }
 
-function onSDDisconnect(p)
+function onTMonitorDisconnect(p)
 {
-  portFromSD = undefined;
+  getPage("TMonitor").port = undefined;
+  console.log("============================portFromTpublisher1 is null");
 }
 
 var portFromPublisher1;
@@ -136,7 +141,8 @@ function onPublisher1Msg(m) {
 
 function onPublisher1Disconnect(p)
 {
-  portFromPublisher1 = undefined;
+  getPage("TPublisher1").port = undefined;
+  console.log("============================portFromTpublisher1 is null");
 }
 
 function connected(p) {

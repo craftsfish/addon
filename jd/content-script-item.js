@@ -1,21 +1,26 @@
-console.log("content script of ITEM is loaded!");
+const ID = "Item";
+console.log("content script of " + ID + " is loaded!");
 
-var myPort = browser.runtime.connect({name:"port-from-item"});
-myPort.postMessage({greeting: "hello from item script"});
-
+var myPort = browser.runtime.connect({name: ID});
+function sendMsg(m)
+{
+  m.id = ID;
+  myPort.postMessage(m);
+}
+sendMsg({greeting: "hello from " + ID + " script"});
 myPort.onMessage.addListener(onBGMsg);
 
 function onBGMsg(m) {
-  console.log("In item script, received message from background script: ");
+  console.log("In " + ID + " script, received message from background script: ");
   console.log(m);
 
   if (m.query == "skuname") {
-    myPort.postMessage({reply: "skuname", data: getSKUName()});
+    sendMsg({reply: "skuname", data: getSKUName()});
   } else if (m.query == "skuimageload") {
     loadSKUImage();
-    myPort.postMessage({reply: "skuimageload", data: "ok"});
+    sendMsg({reply: "skuimageload", data: "ok"});
   } else if (m.query == "skuimage") {
-    myPort.postMessage({reply: "skuimage", data: getSKUImage()});
+    sendMsg({reply: "skuimage", data: getSKUImage()});
   }
 }
 
