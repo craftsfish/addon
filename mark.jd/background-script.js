@@ -1,9 +1,10 @@
 var PC = 0;
 var Instructions = [
-  {name: "idle", instruction: "", target: ""},					/* 1 */
+  {name: "idle", instruction: "", target: ""},					/* 0 */
   {name: "open detail", instruction: "load", target: "FakeOrder"},
   {name: "get order id", instruction: "getOrderID", target: "Detail"},
-  {name: "close detail", instruction: "closeDetail", target: "Background"}
+  {name: "close detail", instruction: "closeDetail", target: "Background"},
+  {name: "query detail", instruction: "queryOrder", target: "JD"}
 ];
 
 /*
@@ -134,7 +135,8 @@ function handleAlarm(alarmInfo) {
   if (i.target == "Background") { /* background message */
     if (i.instruction == "closeDetail") {
       browser.tabs.remove(getPage("Detail").tabId);
-      PC = 0;
+      PC = 4;
+      Instructions[PC].data = "xxxxxx";
     }
   }
 
@@ -146,7 +148,7 @@ function handleAlarm(alarmInfo) {
     return;
   }
 
-  p.port.postMessage({action: i.instruction});
+  p.port.postMessage({action: i.instruction, data: i.data});
   if (i.target == "FakeOrder") {
     if (i.instruction == "load") {
       PC = 2;
