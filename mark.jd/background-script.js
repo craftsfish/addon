@@ -158,6 +158,10 @@ function handleAlarm(alarmInfo) {
     if (i.instruction == "getOrderID") {
       PC = 0;
     }
+  } else if (i.target == "JD") {
+    if (i.instruction == "queryOrder") {
+      PC = 0;
+    }
   }
 }
 
