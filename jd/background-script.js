@@ -140,13 +140,14 @@ function onPublisher1Disconnect(p)
 }
 
 function connected(p) {
-  if (p.name == "port-from-sz") {
-    var Page =  getPage("ShangZhi");
+  var Page =  getPage(p.name);
+  if (Page != undefined) {
     Page.port = p;
     p.onDisconnect.addListener(Page.onDisconnect);
     p.onMessage.addListener(Page.onMsg);
-    console.log(p);
-  } else if (p.name == "port-from-item") {
+    console.log("Page : " + p.name + " has been connected!");
+  }
+  if (p.name == "port-from-item") {
     portFromItem = p;
     portFromItem.onDisconnect.addListener(onItemDisconnect);
     portFromItem.onMessage.addListener(onItemMsg);
