@@ -28,11 +28,22 @@ function onError(error) {
 }
 
 var Pages = [
-  {name:"ShangZhi", regexp: new RegExp("^https:\/\/sz.jd.com\/realTime\/realTop.html$"), script: "content-script-sz.js"},
-  {name:"Item", regexp: new RegExp("^https:\/\/item.jd.com\/.*$"), script: "content-script-item.js"},
-  {name:"TMonitor", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller$"), script: "content-script-sd.js"},
-  {name:"TPublisher", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/renwu\/create\\\?step=1$"), script: "content-script-publisher-1.js"}
+  {name:"ShangZhi", regexp: new RegExp("^https:\/\/sz.jd.com\/realTime\/realTop.html$"), script: "content-script-sz.js", port: undefined,
+    onMsg: onSZMsg, onDisconnect: onSZDisconnect},
+  {name:"Item", regexp: new RegExp("^https:\/\/item.jd.com\/.*$"), script: "content-script-item.js", port: undefined},
+  {name:"TMonitor", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller$"), script: "content-script-sd.js", port: undefined},
+  {name:"TPublisher", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/renwu\/create\\\?step=1$"), script: "content-script-publisher-1.js", port: undefined}
 ];
+
+function getPage(name) {
+  var i = 0;
+  for (i=0; i<Pages.length; i++) {
+    if (Pages[i].name == name) {
+      return Pages[i];
+    }
+  }
+  return undefined;
+}
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   console.log(changeInfo);
@@ -59,8 +70,6 @@ browser.tabs.onUpdated.addListener(onTabsUpdated);
 /*
  * Communication Channel
  */
-var portFromSZ;
-
 function onSZMsg(m) {
   console.log("In background script, received message from SZ");
   console.log(m);
@@ -81,7 +90,7 @@ function onSZMsg(m) {
 
 function onSZDisconnect(p)
 {
-  portFromSZ = undefined;
+  getPage("ShangZhi").port = undefined.
   console.log("============================portFromSZ is null");
 }
 
@@ -132,10 +141,11 @@ function onPublisher1Disconnect(p)
 
 function connected(p) {
   if (p.name == "port-from-sz") {
-    portFromSZ = p;
-    portFromSZ.onDisconnect.addListener(onSZDisconnect);
-    portFromSZ.onMessage.addListener(onSZMsg);
-    console.log(portFromSZ);
+    var Page =  getPage("ShangZhi");
+    Page.port = p;
+    p.onDisconnect.addListener(Page.onDisconnect);
+    p.onMessage.addListener(Page.onMsg);
+    console.log(p);
   } else if (p.name == "port-from-item") {
     portFromItem = p;
     portFromItem.onDisconnect.addListener(onItemDisconnect);
@@ -169,6 +179,9 @@ browser.alarms.create("my-periodic-alarm", {
 function handleAlarm(alarmInfo) {
   console.log("on alarm: " + alarmInfo.name);
   console.log(next);
+
+var portFromSZ = getPage("ShangZhi").port;
+
   if (next == "query rate") {
     if (portFromSZ != undefined) {
       portFromSZ.postMessage({query: "rate"});
