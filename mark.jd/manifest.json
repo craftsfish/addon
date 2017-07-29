@@ -9,6 +9,7 @@
 
   "permissions": [
     "http://www.dasbu.com/seller/*",
+    "https://order.shop.jd.com/order/sSopUp_allList.action*",
     "activeTab",
     "tabs",
     "alarms"
