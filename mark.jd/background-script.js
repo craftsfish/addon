@@ -1,8 +1,14 @@
+var next = new Object();
+next.instruction = "";
+next.target = "";
+
 /*
  * Browser Action Handling
  */
 function onBrowserActionClicked(tab) {
     console.log("JD pluging starts.");
+    next.instruction = "load";
+    next.target = "FakeOrder";
 }
 
 browser.browserAction.onClicked.addListener(onBrowserActionClicked);
@@ -21,8 +27,10 @@ function onError(error) {
 }
 
 var Pages = [
-  {name:"FakeOrder", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd.*$"), script: "content-script-fakeorder.js", port: undefined,
+  {name:"FakeOrder", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd\\\?ss%5Bstatus%5D=2&ss%5Bstart%5D=.*$"), script: "content-script-fakeorder.js", port: undefined,
     onMsg: onFakeOrderMsg, onDisconnect: onPortDisconnect},
+  {name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$"), script: "content-script-detail.js", port: undefined,
+    onMsg: onDetailMsg, onDisconnect: onPortDisconnect}
 ];
 
 function getPage(name) {
@@ -64,6 +72,11 @@ function onFakeOrderMsg(m) {
   console.log(m);
 }
 
+function onDetailMsg(m) {
+  console.log("In background script, received message from Detail");
+  console.log(m);
+}
+
 function onPortDisconnect(p)
 {
   getPage(p.name).port = undefined;
@@ -94,6 +107,25 @@ browser.alarms.create("my-periodic-alarm", {
 
 function handleAlarm(alarmInfo) {
   console.log("on alarm: " + alarmInfo.name);
+  var p = getPage(next.target);
+  if (p == undefined) {
+    return;
+  }
+  if (p.port != undefined) {
+    if (next.target == "FakeOrder") {
+      if (next.instruction == "load") {
+        p.port.postMessage({action: "load"});
+        next.instruction = "getOrderID";
+        next.target = "Detail";
+      }
+    } else if (next.target == "Detail") {
+      if (next.instruction == "getOrderID") {
+        p.port.postMessage({action: next.instruction});
+        next.instruction = "";
+        next.target = "";
+      }
+    }
+  }
 }
 
 browser.alarms.onAlarm.addListener(handleAlarm);

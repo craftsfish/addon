@@ -1,4 +1,4 @@
-const ID = "FakeOrder";
+const ID = "Detail";
 console.log("content script of " + ID + " is loaded!");
 
 var myPort = browser.runtime.connect({name: ID});
@@ -13,13 +13,4 @@ myPort.onMessage.addListener(onBGMsg);
 function onBGMsg(m) {
   console.log("In " + ID + " script, received message from background script: ");
   console.log(m);
-
-  if (m.action == "load") {
-    getItem().click();
-  }
-}
-
-function getItem()
-{
-  return $("a.xq")[0];
 }

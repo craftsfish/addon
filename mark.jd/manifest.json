@@ -8,7 +8,7 @@
   },
 
   "permissions": [
-    "http://www.dasbu.com/seller/order/jd",
+    "http://www.dasbu.com/seller/*",
     "activeTab",
     "tabs",
     "alarms"
