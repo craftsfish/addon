@@ -1,3 +1,4 @@
+var orderID = "";
 var PC = 0;
 var Instructions = [
   {name: "idle", instruction: "", target: ""},					/* 0 */
@@ -50,13 +51,12 @@ function getPage(name) {
 }
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
-  console.log(changeInfo);
-  console.log(tabInfo);
   if (changeInfo.status == "complete") { /* loading complete */
+    console.log(changeInfo);
+    console.log(tabInfo);
+
     var i = 0;
     for (i=0; i<Pages.length; i++) {
-      console.log(tabInfo.url);
-      console.log(Pages[i].regexp);
       if (tabInfo.url.match(Pages[i].regexp) != null) {
         console.log("============================= load script for page : " + Pages[i].name);
         var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
@@ -84,6 +84,7 @@ function onDetailMsg(m) {
   console.log(m);
 
   if (m.reply == "orderID") {
+    orderID = m.data;
     PC = 3;
   }
 }
@@ -136,7 +137,7 @@ function handleAlarm(alarmInfo) {
     if (i.instruction == "closeDetail") {
       browser.tabs.remove(getPage("Detail").tabId);
       PC = 4;
-      Instructions[PC].data = "xxxxxx";
+      Instructions[PC].data = orderID;
     }
   }
 

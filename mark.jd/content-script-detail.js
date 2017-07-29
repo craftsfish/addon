@@ -20,5 +20,5 @@ function onBGMsg(m) {
 }
 
 function getOrderID() {
-  return $("div.row:contains('平台订单')")[0].childNodes[3].innerHTML;
+  return $("div.row:contains('平台订单')")[0].childNodes[3].innerHTML.match(/\d+/)[0];
 }
