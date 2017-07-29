@@ -1,14 +1,16 @@
-var next = new Object();
-next.instruction = "";
-next.target = "";
+var PC = 0;
+var Instructions = [
+  {name: "idle", instruction: "", target: ""},					/* 1 */
+  {name: "open detail", instruction: "load", target: "FakeOrder"},
+  {name: "get order id", instruction: "getOrderID", target: "Detail"}
+];
 
 /*
  * Browser Action Handling
  */
 function onBrowserActionClicked(tab) {
-    console.log("JD pluging starts.");
-    next.instruction = "load";
-    next.target = "FakeOrder";
+  console.log("JD pluging starts.");
+  PC = 1;
 }
 
 browser.browserAction.onClicked.addListener(onBrowserActionClicked);
@@ -107,23 +109,32 @@ browser.alarms.create("my-periodic-alarm", {
 
 function handleAlarm(alarmInfo) {
   console.log("on alarm: " + alarmInfo.name);
-  var p = getPage(next.target);
+  console.log(PC);
+
+  if (PC == 0) {
+    return;
+  }
+
+  /* get target page */
+  var i = Instructions[PC];
+  console.log(i);
+  var p = getPage(i.target);
+
   if (p == undefined) {
     return;
   }
-  if (p.port != undefined) {
-    if (next.target == "FakeOrder") {
-      if (next.instruction == "load") {
-        p.port.postMessage({action: "load"});
-        next.instruction = "getOrderID";
-        next.target = "Detail";
-      }
-    } else if (next.target == "Detail") {
-      if (next.instruction == "getOrderID") {
-        p.port.postMessage({action: next.instruction});
-        next.instruction = "";
-        next.target = "";
-      }
+  if (p.port == undefined) {
+    return;
+  }
+
+  p.port.postMessage({action: i.instruction});
+  if (i.target == "FakeOrder") {
+    if (i.instruction == "load") {
+      PC = 2;
+    }
+  } else if (next.target == "Detail") {
+    if (next.instruction == "getOrderID") {
+      PC = 0;
     }
   }
 }
