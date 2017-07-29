@@ -59,6 +59,7 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
         executing.then(onExecuted, onError);
         executing = browser.tabs.executeScript(null, {file: Pages[i].script});
         executing.then(onExecuted, onError);
+        Pages[i].tabId = tabId;
       }
     }
   }
@@ -77,6 +78,10 @@ function onFakeOrderMsg(m) {
 function onDetailMsg(m) {
   console.log("In background script, received message from Detail");
   console.log(m);
+
+  if (m.reply == "orderID") {
+    console.log(getPage("Detail").tabId);
+  }
 }
 
 function onPortDisconnect(p)
@@ -132,8 +137,8 @@ function handleAlarm(alarmInfo) {
     if (i.instruction == "load") {
       PC = 2;
     }
-  } else if (next.target == "Detail") {
-    if (next.instruction == "getOrderID") {
+  } else if (i.target == "Detail") {
+    if (i.instruction == "getOrderID") {
       PC = 0;
     }
   }

@@ -13,4 +13,12 @@ myPort.onMessage.addListener(onBGMsg);
 function onBGMsg(m) {
   console.log("In " + ID + " script, received message from background script: ");
   console.log(m);
+
+  if (m.action == "getOrderID") {
+    sendMsg({reply: "orderID", data: getOrderID()});
+  }
+}
+
+function getOrderID() {
+  return $("div.row:contains('平台订单')")[0].childNodes[3].innerHTML;
 }
