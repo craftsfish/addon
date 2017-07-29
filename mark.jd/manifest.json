@@ -1,0 +1,25 @@
+{
+  "description": "Automatically mark fake order.",
+  "manifest_version": 2,
+  "name": "OrderMark",
+  "version": "1.0",
+  "icons": {
+    "48": "icons/beasts-48.png"
+  },
+
+  "permissions": [
+    "http://www.dasbu.com/seller/order/jd",
+    "activeTab",
+    "tabs",
+    "alarms"
+  ],  
+
+  "background": {
+    "scripts": ["background-script.js"]
+  },
+
+  "browser_action": {
+    "default_icon": "icons/beasts-32.png",
+    "default_title": "OrderMark"
+  }
+}
