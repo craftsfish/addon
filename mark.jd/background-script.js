@@ -113,6 +113,16 @@ function onJDMsg(m) {
       nxt.target = "JD";
       nxt.data = orderID;
     }
+  } else if (m.reply == "editMark") {
+    if (m.data == "ok") {
+      nxt.action = "setMark";
+      nxt.target = "JD";
+      nxt.data = "";
+    } else {
+      nxt.action = "";
+      nxt.target = "";
+      nxt.data = "";
+    }
   }
 }
 
@@ -164,7 +174,6 @@ function onAction(a) {
 
 function handleAlarm(alarmInfo) {
   console.log("on alarm: " + alarmInfo.name);
-  console.log(nxt);
 
   if (nxt.action != "") {
     onAction(nxt);
