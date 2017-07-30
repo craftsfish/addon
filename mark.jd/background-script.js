@@ -128,9 +128,9 @@ function onJDMsg(m) {
       nxt.target = "JD";
       nxt.data = "";
     } else {
-      nxt.action = "";
-      nxt.target = "";
-      nxt.data = "";
+      nxt.action = "editMark";
+      nxt.target = "JD";
+      nxt.data = orderID;
     }
   } else if (m.reply == "setMark") {
     if (m.data == "ok") {

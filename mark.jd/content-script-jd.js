@@ -32,11 +32,18 @@ function query(v)
 function editMark(id)
 {
   if ($("span:contains('订单编号')")[0].childNodes[1].innerHTML == id) {
-    $("a:contains('修改备注')")[0].click();
-    sendMsg({reply: "editMark", data: "ok"});
-  } else {
-    sendMsg({reply: "editMark", data: "failed"});
+    var x = $("a:contains('修改备注')")[0];
+    if (x == undefined) {
+      x = $("a:contains('添加备注')")[0];
+    }
+
+    if (x != undefined) {
+      x.click();
+      sendMsg({reply: "editMark", data: "ok"});
+      return
+    }
   }
+  sendMsg({reply: "editMark", data: "failed"});
 }
 
 function setMark()
