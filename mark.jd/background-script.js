@@ -6,19 +6,7 @@ var nxt = {
 
 var total = -1;
 var cur = -1;
-
 var orderID = "";
-var PC = 0;
-var Instructions = [
-  {name: "idle", instruction: "", target: ""},					/* 0 */
-  {name: "open detail", instruction: "load", target: "FakeOrder"},
-  {name: "get order id", instruction: "getOrderID", target: "Detail"},
-  {name: "close detail", instruction: "closeDetail", target: "Background"},
-  {name: "query order", instruction: "queryOrder", target: "JD"},
-  {name: "edit mark", instruction: "editMark", target: "JD"},			/* 5 */
-  {name: "set mark", instruction: "setMark", target: "JD"},
-  {name: "query total", instruction: "queryTotal", target: "FakeOrder"}
-];
 
 /*
  * Browser Action Handling
@@ -204,58 +192,6 @@ function handleAlarm(alarmInfo) {
 
   if (nxt.action != "") {
     onAction(nxt);
-    return;
-  }
-
-  if (PC == 0) {
-    return;
-  }
-
-  /* get target page */
-  var i = Instructions[PC];
-
-  if (i.target == "Background") { /* background message */
-    if (i.instruction == "closeDetail") {
-      browser.tabs.remove(getPage("Detail").tabId);
-      PC = 4;
-      Instructions[PC].data = orderID;
-    }
-  }
-
-  var p = getPage(i.target);
-  if (p == undefined) {
-    return;
-  }
-  if (p.port == undefined) {
-    return;
-  }
-
-  p.port.postMessage({action: i.instruction, data: i.data});
-  if (i.target == "FakeOrder") {
-    if (i.instruction == "queryTotal") {
-      PC = 0;
-    } else if (i.instruction == "load") {
-      PC = 2;
-    }
-  } else if (i.target == "Detail") {
-    if (i.instruction == "getOrderID") {
-      PC = 0;
-    }
-  } else if (i.target == "JD") {
-    if (i.instruction == "queryOrder") {
-      PC = 5;
-    } else if (i.instruction == "editMark") {
-      PC = 6;
-    } else if (i.instruction == "setMark") {
-      cur++;
-      console.log("=====================> handling order : " + cur.toString());
-      if (cur < total) {
-        PC = 1;
-        Instructions[PC].data = cur;
-      } else {
-        PC = 0;
-      }
-    }
   }
 }
 
