@@ -44,4 +44,5 @@ function setMark()
   $("#remarkArea")[0].value = "1 AT";
   $("#tagblue")[0].click();
   $("#rSubmitButton")[0].click();
+  sendMsg({reply: "setMark", data: "ok"});
 }

@@ -123,6 +123,12 @@ function onJDMsg(m) {
       nxt.target = "";
       nxt.data = "";
     }
+  } else if (m.reply == "setMark") {
+    if (m.data == "ok") {
+      nxt.action = "markDone";
+      nxt.target = "FakeOrder";
+      nxt.data = cur;
+    }
   }
 }
 

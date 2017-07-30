@@ -17,6 +17,8 @@ function onBGMsg(m) {
     loadDetail(m.data);
   } else if (m.action == "queryTotal") {
     sendMsg({reply: "total", data: getTotal()});
+  } else if (m.action == "markDone") {
+    markDone(m.data);
   }
 }
 
@@ -37,4 +39,9 @@ function loadDetail(i) {
   } else {
     sendMsg({reply: "detail", data: "failed"});
   }
+}
+
+function markDone(i) {
+  $("a:contains('确认')")[0].click()
+  sendMsg({reply: "markDone", data: "continue"});
 }
