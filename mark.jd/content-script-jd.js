@@ -16,7 +16,7 @@ function onBGMsg(m) {
   if (m.action == "queryOrder") {
     query(m.data);
   } else if (m.action == "editMark") {
-    editMark();
+    editMark(m.data);
   } else if (m.action == "setMark") {
     setMark();
   }
@@ -26,11 +26,17 @@ function query(v)
 {
     $("input#orderId")[0].value = v;
     $("#orderQueryBtn")[0].click();
+    sendMsg({reply: "queryOrder", data: "ok"});
 }
 
-function editMark()
+function editMark(id)
 {
-  return $("div.order_tbl table tbody tr.content a:contains('修改备注')")[0].click();
+  if ($("span:contains('订单编号')")[0].childNodes[1].innerHTML == id) {
+    $("a:contains('修改备注')")[0].click();
+    sendMsg({reply: "editMark", data: "ok"});
+  } else {
+    sendMsg({reply: "editMark", data: "failed"});
+  }
 }
 
 function setMark()

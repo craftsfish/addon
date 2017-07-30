@@ -107,6 +107,13 @@ function onDetailMsg(m) {
 
 function onJDMsg(m) {
   console.log(m);
+  if (m.reply == "queryOrder") {
+    if (m.data == "ok") {
+      nxt.action = "editMark";
+      nxt.target = "JD";
+      nxt.data = orderID;
+    }
+  }
 }
 
 function onPortDisconnect(p)
