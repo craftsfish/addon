@@ -97,8 +97,11 @@ function onDetailMsg(m) {
   console.log(m);
 
   if (m.reply == "orderID") {
-    orderID = m.data;
-    PC = 3;
+    if (m.data != undefined) {
+      orderID = m.data;
+      nxt.action = "closeDetail";
+      nxt.target = "Background";
+    }
   }
 }
 
@@ -133,6 +136,16 @@ browser.alarms.create("my-periodic-alarm", {
 });
 
 function onAction(a) {
+  if (a.target == "Background") {
+    if (a.action == "closeDetail") {
+      browser.tabs.remove(getPage("Detail").tabId);
+      a.action = "";
+      a.target = "";
+      a.data = "";
+    }
+    return;
+  }
+
   var p = getPage(a.target);
   if (p.port != undefined) {
     p.port.postMessage(a);
