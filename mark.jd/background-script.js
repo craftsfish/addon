@@ -79,10 +79,12 @@ function onFakeOrderMsg(m) {
 
   if (m.reply == "total") {
     total = m.data;
-    console.log("=============> total order : " + total.toString());
     cur = 0;
-    PC = 1;
-    Instructions[PC].data = cur;
+    console.log("=============> total order : " + total.toString());
+
+    nxt.action = "loadDetail";
+    nxt.target = "FakeOrder";
+    nxt.data = cur;
   }
 }
 
