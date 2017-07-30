@@ -139,9 +139,9 @@ function onAction(a) {
   if (a.target == "Background") {
     if (a.action == "closeDetail") {
       browser.tabs.remove(getPage("Detail").tabId);
-      a.action = "";
-      a.target = "";
-      a.data = "";
+      a.action = "queryOrder";
+      a.target = "JD";
+      a.data = orderID;
     }
     return;
   }
