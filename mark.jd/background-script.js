@@ -1,3 +1,6 @@
+var total = -1;
+var cur = -1;
+
 var orderID = "";
 var PC = 0;
 var Instructions = [
@@ -6,7 +9,9 @@ var Instructions = [
   {name: "get order id", instruction: "getOrderID", target: "Detail"},
   {name: "close detail", instruction: "closeDetail", target: "Background"},
   {name: "query order", instruction: "queryOrder", target: "JD"},
-  {name: "edit mark", instruction: "editMark", target: "JD"}
+  {name: "edit mark", instruction: "editMark", target: "JD"},			/* 5 */
+  {name: "set mark", instruction: "setMark", target: "JD"},
+  {name: "query total", instruction: "queryTotal", target: "FakeOrder"}
 ];
 
 /*
@@ -14,7 +19,7 @@ var Instructions = [
  */
 function onBrowserActionClicked(tab) {
   console.log("JD pluging starts.");
-  PC = 1;
+  PC = 7;
 }
 
 browser.browserAction.onClicked.addListener(onBrowserActionClicked);
@@ -78,6 +83,14 @@ browser.tabs.onUpdated.addListener(onTabsUpdated);
 function onFakeOrderMsg(m) {
   console.log("In background script, received message from FakeOrder");
   console.log(m);
+
+  if (m.reply == "total") {
+    total = m.data;
+    console.log("=============> total order : " + total.toString());
+    cur = 0;
+    PC = 1;
+    Instructions[PC].data = cur;
+  }
 }
 
 function onDetailMsg(m) {
@@ -152,7 +165,9 @@ function handleAlarm(alarmInfo) {
 
   p.port.postMessage({action: i.instruction, data: i.data});
   if (i.target == "FakeOrder") {
-    if (i.instruction == "load") {
+    if (i.instruction == "queryTotal") {
+      PC = 0;
+    } else if (i.instruction == "load") {
       PC = 2;
     }
   } else if (i.target == "Detail") {
@@ -163,6 +178,8 @@ function handleAlarm(alarmInfo) {
     if (i.instruction == "queryOrder") {
       PC = 5;
     } else if (i.instruction == "editMark") {
+      PC = 6;
+    } else if (i.instruction == "setMark") {
       PC = 0;
     }
   }

@@ -16,10 +16,16 @@ function onBGMsg(m) {
 
   if (m.action == "load") {
     getItem().click();
+  } else if (m.action == "queryTotal") {
+    sendMsg({reply: "total", data: getTotal()});
   }
 }
 
 function getItem()
 {
   return $("a.xq")[0];
+}
+
+function getTotal() {
+  return parseInt($("a:contains('待审核订单')")[0].childNodes[1].innerHTML);
 }

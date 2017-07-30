@@ -18,6 +18,8 @@ function onBGMsg(m) {
     query(m.data);
   } else if (m.action == "editMark") {
     editMark();
+  } else if (m.action == "setMark") {
+    setMark();
   }
 }
 
@@ -30,4 +32,11 @@ function query(v)
 function editMark()
 {
   return $("div.order_tbl table tbody tr.content a:contains('修改备注')")[0].click();
+}
+
+function setMark()
+{
+  $("#remarkArea")[0].value = "1 AT";
+  $("#tagblue")[0].click();
+  $("#rSubmitButton")[0].click();
 }
