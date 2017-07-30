@@ -5,7 +5,8 @@ var Instructions = [
   {name: "open detail", instruction: "load", target: "FakeOrder"},
   {name: "get order id", instruction: "getOrderID", target: "Detail"},
   {name: "close detail", instruction: "closeDetail", target: "Background"},
-  {name: "query detail", instruction: "queryOrder", target: "JD"}
+  {name: "query order", instruction: "queryOrder", target: "JD"},
+  {name: "edit mark", instruction: "editMark", target: "JD"}
 ];
 
 /*
@@ -160,6 +161,8 @@ function handleAlarm(alarmInfo) {
     }
   } else if (i.target == "JD") {
     if (i.instruction == "queryOrder") {
+      PC = 5;
+    } else if (i.instruction == "editMark") {
       PC = 0;
     }
   }

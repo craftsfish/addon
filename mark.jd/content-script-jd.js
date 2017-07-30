@@ -16,6 +16,8 @@ function onBGMsg(m) {
 
   if (m.action == "queryOrder") {
     query(m.data);
+  } else if (m.action == "editMark") {
+    editMark();
   }
 }
 
@@ -23,4 +25,9 @@ function query(v)
 {
     $("input#orderId")[0].value = v;
     $("#orderQueryBtn")[0].click();
+}
+
+function editMark()
+{
+  return $("div.order_tbl table tbody tr.content a:contains('修改备注')")[0].click();
 }
