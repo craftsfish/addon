@@ -38,11 +38,11 @@ function onError(error) {
 }
 
 var Pages = [
-  {name:"FakeOrder", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd\\\?ss%5Bstatus%5D=2&ss%5Bstart%5D=.*$"), port: undefined,
+  {name:"FakeOrder", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd\\\?ss%5Bstatus%5D=2&ss%5Bstart%5D=.*$"),
     onMsg: onFakeOrderMsg, onDisconnect: onPortDisconnect},
-  {name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$"), port: undefined,
+  {name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$"),
     onMsg: onDetailMsg, onDisconnect: onPortDisconnect},
-  {name:"JD", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sSopUp_allList.action.*$"), port: undefined,
+  {name:"JD", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sSopUp_allList.action.*$"),
     onMsg: onJDMsg, onDisconnect: onPortDisconnect}
 ];
 
