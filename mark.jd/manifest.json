@@ -8,10 +8,11 @@
   },
 
   "permissions": [
-    "http://www.dasbu.com/seller/*",
-    "https://order.shop.jd.com/order/sSopUp_allList.action*",
+    "<all_urls>",
     "activeTab",
     "tabs",
+    "webNavigation",
+    "webRequest",
     "alarms"
   ],  
 
@@ -22,5 +23,24 @@
   "browser_action": {
     "default_icon": "icons/beasts-32.png",
     "default_title": "OrderMark"
-  }
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["jquery/jquery-1.4.min.js"]
+    },
+    {
+      "matches": ["https://order.shop.jd.com/order/sSopUp_allList.action*"],
+      "js": ["content-script-jd.js"]
+    },
+    {
+      "matches": ["http://www.dasbu.com/seller/order/detail?id=*"],
+      "js": ["content-script-detail.js"]
+    },
+    {
+      "matches": ["http://www.dasbu.com/seller/order/jd?ss%5Bstatus%5D=2&ss%5Bstart%5D="],
+      "js": ["content-script-fakeorder.js"]
+    }
+  ]
 }

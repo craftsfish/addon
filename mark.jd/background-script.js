@@ -38,11 +38,11 @@ function onError(error) {
 }
 
 var Pages = [
-  {name:"FakeOrder", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd\\\?ss%5Bstatus%5D=2&ss%5Bstart%5D=.*$"), script: "content-script-fakeorder.js", port: undefined,
+  {name:"FakeOrder", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd\\\?ss%5Bstatus%5D=2&ss%5Bstart%5D=.*$"), port: undefined,
     onMsg: onFakeOrderMsg, onDisconnect: onPortDisconnect},
-  {name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$"), script: "content-script-detail.js", port: undefined,
+  {name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$"), port: undefined,
     onMsg: onDetailMsg, onDisconnect: onPortDisconnect},
-  {name:"JD", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sSopUp_allList.action.*$"), script: "content-script-jd.js", port: undefined,
+  {name:"JD", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sSopUp_allList.action.*$"), port: undefined,
     onMsg: onJDMsg, onDisconnect: onPortDisconnect}
 ];
 
@@ -58,17 +58,14 @@ function getPage(name) {
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   if (changeInfo.status == "complete") { /* loading complete */
+/*
     console.log(changeInfo);
     console.log(tabInfo);
+*/
 
     var i = 0;
     for (i=0; i<Pages.length; i++) {
       if (tabInfo.url.match(Pages[i].regexp) != null) {
-        console.log("============================= load script for page : " + Pages[i].name);
-        var executing = browser.tabs.executeScript(null, {file: "jquery/jquery-1.4.min.js"});
-        executing.then(onExecuted, onError);
-        executing = browser.tabs.executeScript(null, {file: Pages[i].script});
-        executing.then(onExecuted, onError);
         Pages[i].tabId = tabId;
       }
     }
