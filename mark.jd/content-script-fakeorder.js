@@ -7,7 +7,6 @@ function sendMsg(m)
   m.id = ID;
   myPort.postMessage(m);
 }
-sendMsg({greeting: "hello from " + ID + " script"});
 myPort.onMessage.addListener(onBGMsg);
 
 function onBGMsg(m) {

@@ -27,16 +27,6 @@ browser.browserAction.onClicked.addListener(onBrowserActionClicked);
 /*
  * Tabs Updated Handling
  */
-function onExecuted(result) {
-  console.log("Success: executeScript.");
-  console.log(result);
-}
-
-function onError(error) {
-  console.log("Error: executeScript.");
-  console.log(error);
-}
-
 var Pages = [
   {name:"FakeOrder", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd\\\?ss%5Bstatus%5D=2&ss%5Bstart%5D=.*$"),
     onMsg: onFakeOrderMsg, onDisconnect: onPortDisconnect},
@@ -78,7 +68,6 @@ browser.tabs.onUpdated.addListener(onTabsUpdated);
  * Communication Channel
  */
 function onFakeOrderMsg(m) {
-  console.log("In background script, received message from FakeOrder");
   console.log(m);
 
   if (m.reply == "total") {
@@ -91,7 +80,6 @@ function onFakeOrderMsg(m) {
 }
 
 function onDetailMsg(m) {
-  console.log("In background script, received message from Detail");
   console.log(m);
 
   if (m.reply == "orderID") {
@@ -101,14 +89,12 @@ function onDetailMsg(m) {
 }
 
 function onJDMsg(m) {
-  console.log("In background script, received message from JD");
   console.log(m);
 }
 
 function onPortDisconnect(p)
 {
   getPage(p.name).port = undefined;
-  console.log("============================ Port : " + p.name +" is null!");
 }
 
 function connected(p) {
@@ -117,7 +103,6 @@ function connected(p) {
     Page.port = p;
     p.onDisconnect.addListener(Page.onDisconnect);
     p.onMessage.addListener(Page.onMsg);
-    console.log("Page : " + p.name + " has been connected!");
   }
 }
 
@@ -126,8 +111,8 @@ browser.runtime.onConnect.addListener(connected);
 /*
  * periodic task
  */
-const delayInMinutes = 0.1;
-const periodInMinutes = 0.1;
+const delayInMinutes = 0.05;
+const periodInMinutes = 0.05;
 browser.alarms.create("my-periodic-alarm", {
   delayInMinutes,
   periodInMinutes
