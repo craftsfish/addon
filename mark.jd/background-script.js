@@ -1,3 +1,9 @@
+var nxt = {
+  action: "",
+  target: "",
+  data: ""
+};
+
 var total = -1;
 var cur = -1;
 
@@ -19,7 +25,8 @@ var Instructions = [
  */
 function onBrowserActionClicked(tab) {
   console.log("JD pluging starts.");
-  PC = 7;
+  nxt.action = "queryTotal";
+  nxt.target = "FakeOrder";
 }
 
 browser.browserAction.onClicked.addListener(onBrowserActionClicked);
@@ -118,9 +125,24 @@ browser.alarms.create("my-periodic-alarm", {
   periodInMinutes
 });
 
+function onAction(a) {
+  var p = getPage(a.target);
+  if (p.port != undefined) {
+    p.port.postMessage(a);
+    a.action = "";
+    a.target = "";
+    a.data = "";
+  }
+}
+
 function handleAlarm(alarmInfo) {
   console.log("on alarm: " + alarmInfo.name);
-  console.log(PC);
+  console.log(nxt);
+
+  if (nxt.action != "") {
+    onAction(nxt);
+    return;
+  }
 
   if (PC == 0) {
     return;
