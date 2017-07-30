@@ -180,7 +180,14 @@ function handleAlarm(alarmInfo) {
     } else if (i.instruction == "editMark") {
       PC = 6;
     } else if (i.instruction == "setMark") {
-      PC = 0;
+      cur++;
+      console.log("=====================> handling order : " + cur.toString());
+      if (cur < total) {
+        PC = 1;
+        Instructions[PC].data = cur;
+      } else {
+        PC = 0;
+      }
     }
   }
 }

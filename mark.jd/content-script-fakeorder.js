@@ -15,15 +15,15 @@ function onBGMsg(m) {
   console.log(m);
 
   if (m.action == "load") {
-    getItem().click();
+    getItem(m.data).click();
   } else if (m.action == "queryTotal") {
     sendMsg({reply: "total", data: getTotal()});
   }
 }
 
-function getItem()
+function getItem(i)
 {
-  return $("a.xq")[0];
+  return $("a.xq")[i];
 }
 
 function getTotal() {
