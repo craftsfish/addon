@@ -78,17 +78,38 @@ function onFakeOrderMsg(m) {
   console.log(m);
 
   if (m.reply == "total") {
-    total = m.data;
     cur = 0;
+    if (m.data == undefined) {
+      total = 0;
+    } else {
+      total = m.data;
+    }
     console.log("=============> total order : " + total.toString());
 
-    nxt.action = "loadDetail";
-    nxt.target = "FakeOrder";
-    nxt.data = cur;
+    if (total > 0) {
+      nxt.action = "loadDetail";
+      nxt.target = "FakeOrder";
+      nxt.data = cur;
+    }
   } else if (m.reply == "detail") {
     if (m.data == "ok") {
       nxt.action = "getOrderID";
       nxt.target = "Detail";
+    }
+  } else if (m.reply == "markDone") {
+    nxt.action = "sureDone";
+    nxt.target = "FakeOrder";
+  } else if (m.reply == "sureDone") {
+    if (m.data == "ok") {
+      total--;
+      if (cur < total) {
+        nxt.action = "loadDetail";
+        nxt.target = "FakeOrder";
+        nxt.data = cur;
+      }
+    } else {
+      nxt.action = "sureDone";
+      nxt.target = "FakeOrder";
     }
   }
 }

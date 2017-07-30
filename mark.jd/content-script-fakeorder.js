@@ -16,9 +16,11 @@ function onBGMsg(m) {
   if (m.action == "loadDetail") {
     loadDetail(m.data);
   } else if (m.action == "queryTotal") {
-    sendMsg({reply: "total", data: getTotal()});
+    getTotal();
   } else if (m.action == "markDone") {
     markDone(m.data);
+  } else if (m.action == "sureDone") {
+    sureDone();
   }
 }
 
@@ -28,7 +30,12 @@ function getItem(i)
 }
 
 function getTotal() {
-  return parseInt($("a:contains('待审核订单')")[0].childNodes[1].innerHTML);
+  var x = $("a:contains('待审核订单')")[0].childNodes[1];
+  if (x == undefined) {
+    sendMsg({reply: "total", data: undefined});
+  } else {
+    sendMsg({reply: "total", data: parseInt(x.innerHTML)});
+  }
 }
 
 function loadDetail(i) {
@@ -44,4 +51,14 @@ function loadDetail(i) {
 function markDone(i) {
   $("a:contains('确认')")[0].click()
   sendMsg({reply: "markDone", data: "continue"});
+}
+
+function sureDone() {
+  var btn = $("button:contains('确认返款')")[0];
+  if (btn != undefined) {
+    btn.click();
+    sendMsg({reply: "sureDone", data: "ok"});
+  } else {
+    sendMsg({reply: "sureDone", data: "again"});
+  }
 }
