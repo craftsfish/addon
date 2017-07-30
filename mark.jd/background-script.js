@@ -85,6 +85,11 @@ function onFakeOrderMsg(m) {
     nxt.action = "loadDetail";
     nxt.target = "FakeOrder";
     nxt.data = cur;
+  } else if (m.reply == "detail") {
+    if (m.data == "ok") {
+      nxt.action = "getOrderID";
+      nxt.target = "Detail";
+    }
   }
 }
 
