@@ -9,6 +9,7 @@ var cur = -1;
 var orderID = "";
 var progressing = 0;
 var d = new Date();
+var FakeOrderTabID;
 const taskDelay = 5*60*1000;
 var lastDone = d.getTime() - taskDelay;
 
@@ -27,12 +28,19 @@ function setProgressStatus(v)
 /*
  * Browser Action Handling
  */
+function onTotalReceived(m){
+  log("=========================> Total received!");
+  log(m);
+}
+
 function onFakeOrderReload() {
   log("=========================> FakeOrder reloaded!");
+  return browser.tabs.sendMessage(FakeOrderTabID, nxt);
 }
 
 function onFakeOrderFound(tabs) {
   if (tabs.length == 1) {
+    FakeOrderTabID = tabs[0].id;
     return browser.tabs.reload(tabs[0].id);
   } else {
     throw new Error('failed to found FakeOrder tab');
@@ -60,7 +68,16 @@ function onError(error) {
 }
 
 function onBrowserActionClicked(tab) {
-  /* reload pages */
+  /* clear existing port */
+  var i = 0;
+  for (i=0; i<Pages.length; i++) {
+    Pages[i].port = undefined;
+  }
+
+  setProgressStatus(1);
+  nxt.action = "queryTotal";
+  nxt.target = "FakeOrder";
+
   browser.tabs.query({currentWindow: true, url: [
     "https://order.shop.jd.com/order/sSopUp_allList.action*"
   ]})
@@ -68,18 +85,8 @@ function onBrowserActionClicked(tab) {
   .then(onJDReload)
   .then(onFakeOrderFound)
   .then(onFakeOrderReload)
+  .then(onTotalReceived)
   .catch(onError);
-
-  /* clear existing port */
-  var i = 0;
-  for (i=0; i<Pages.length; i++) {
-    Pages[i].port = undefined;
-  }
-
-  /* start progress */
-  setProgressStatus(1);
-  nxt.action = "queryTotal";
-  nxt.target = "FakeOrder";
 }
 
 browser.browserAction.onClicked.addListener(onBrowserActionClicked);

@@ -62,3 +62,18 @@ function sureDone() {
     sendMsg({reply: "sureDone", data: "again"});
   }
 }
+
+
+function onMsg(m)
+{
+  console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx test message received!");
+  console.log(m);
+  var x = $("a:contains('待审核订单')")[0].childNodes[1];
+  if (x == undefined) {
+    return Promise.reject(new Error("no order to be handled"));
+  } else {
+    return Promise.resolve({reply: "total", data: x});
+  }
+  
+}
+browser.runtime.onMessage.addListener(onMsg);
