@@ -7,12 +7,42 @@ var nxt = {
 var total = -1;
 var cur = -1;
 var orderID = "";
+var progressing = 0;
+
+function setProgressStatus(v)
+{
+  progressing = v;
+  if (progressing == 0) {
+    log("=========================> progress stops!");
+  } else {
+    log("=========================> progress starts!");
+  }
+}
 
 /*
  * Browser Action Handling
  */
+function onTabs(tabs) {
+  for (let tab of tabs) {
+    log(`===============> reload : ${tab.url}`);
+    browser.tabs.reload(tab.id);
+  }
+}
+
+function onError(error) {
+  console.log(`Error: ${error}`);
+}
+
 function onBrowserActionClicked(tab) {
-  console.log("JD pluging starts.");
+  /* reload pages */
+  var querying = browser.tabs.query({currentWindow: true, url: [
+    "https://order.shop.jd.com/order/sSopUp_allList.action*",
+    "http://www.dasbu.com/seller/order/jd?ss%5Bstatus%5D=2&ss%5Bstart%5D="
+  ]});
+  querying.then(onTabs, onError);
+
+  /* start progress */
+  setProgressStatus(1);
   nxt.action = "queryTotal";
   nxt.target = "FakeOrder";
 }
@@ -196,3 +226,12 @@ function handleAlarm(alarmInfo) {
 }
 
 browser.alarms.onAlarm.addListener(handleAlarm);
+
+
+function err(m) {
+  console.log(m);
+}
+
+function log(m) {
+  console.log(m);
+}
