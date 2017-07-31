@@ -8,12 +8,17 @@ var total = -1;
 var cur = -1;
 var orderID = "";
 var progressing = 0;
+var d = new Date();
+const taskDelay = 5*60*1000;
+var lastDone = d.getTime() - taskDelay;
 
 function setProgressStatus(v)
 {
   progressing = v;
   if (progressing == 0) {
     log("=========================> progress stops!");
+    var d = new Date();
+    lastDone = d.getTime();
   } else {
     log("=========================> progress starts!");
   }
@@ -238,6 +243,12 @@ function handleAlarm(alarmInfo) {
 
   if (nxt.action != "") {
     onAction(nxt);
+  } else if (progressing == 0) {
+    var d = new Date();
+    if (d.getTime() - lastDone - taskDelay > 0) {
+      lastDone += 1000 * taskDelay;
+      onBrowserActionClicked(undefined);
+    }
   }
 }
 
