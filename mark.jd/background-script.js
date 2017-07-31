@@ -41,6 +41,12 @@ function onBrowserActionClicked(tab) {
   ]});
   querying.then(onTabs, onError);
 
+  /* clear existing port */
+  var i = 0;
+  for (i=0; i<Pages.length; i++) {
+    Pages[i].port = undefined;
+  }
+
   /* start progress */
   setProgressStatus(1);
   nxt.action = "queryTotal";
@@ -108,6 +114,8 @@ function onFakeOrderMsg(m) {
       nxt.action = "loadDetail";
       nxt.target = "FakeOrder";
       nxt.data = cur;
+    } else {
+      setProgressStatus(0);
     }
   } else if (m.reply == "detail") {
     if (m.data == "ok") {
@@ -124,6 +132,8 @@ function onFakeOrderMsg(m) {
         nxt.action = "loadDetail";
         nxt.target = "FakeOrder";
         nxt.data = cur;
+      } else {
+        setProgress(0);
       }
     } else {
       nxt.action = "sureDone";
@@ -173,6 +183,7 @@ function onJDMsg(m) {
 
 function onPortDisconnect(p)
 {
+  log(`=======================> port : ${p.name} disconnect!`);
   getPage(p.name).port = undefined;
 }
 
