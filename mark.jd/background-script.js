@@ -27,6 +27,14 @@ function setProgressStatus(v)
 /*
  * Browser Action Handling
  */
+function onBaiduFound(tabs) {
+  if (tabs.length == 1) {
+    log(`===============> found : ${tabs[0].url}`);
+  } else {
+    throw new Error('failed to found baidu tab');
+  }
+}
+
 function onTabs(tabs) {
   for (let tab of tabs) {
     log(`===============> reload : ${tab.url}`);
@@ -45,6 +53,13 @@ function onBrowserActionClicked(tab) {
     "http://www.dasbu.com/seller/order/jd?ss%5Bstatus%5D=2&ss%5Bstart%5D="
   ]});
   querying.then(onTabs, onError);
+
+
+  browser.tabs.query({currentWindow: true, url: [
+    "https://www.baidu.com/"
+  ]})
+  .then(onBaiduFound)
+  .catch(onError);
 
   /* clear existing port */
   var i = 0;
