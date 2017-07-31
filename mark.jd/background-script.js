@@ -27,38 +27,47 @@ function setProgressStatus(v)
 /*
  * Browser Action Handling
  */
-function onBaiduFound(tabs) {
+function onFakeOrderReload() {
+  log("=========================> FakeOrder reloaded!");
+}
+
+function onFakeOrderFound(tabs) {
   if (tabs.length == 1) {
-    log(`===============> found : ${tabs[0].url}`);
+    return browser.tabs.reload(tabs[0].id);
   } else {
-    throw new Error('failed to found baidu tab');
+    throw new Error('failed to found FakeOrder tab');
   }
 }
 
-function onTabs(tabs) {
-  for (let tab of tabs) {
-    log(`===============> reload : ${tab.url}`);
-    browser.tabs.reload(tab.id);
+function onJDReload() {
+  log("=========================> JD reloaded!");
+  return browser.tabs.query({currentWindow: true, url: [
+    "http://www.dasbu.com/seller/order/jd?ss%5Bstatus%5D=2&ss%5Bstart%5D="
+  ]});
+}
+
+function onJDFound(tabs) {
+  if (tabs.length == 1) {
+    return browser.tabs.reload(tabs[0].id);
+  } else {
+    throw new Error('failed to found JD tab');
   }
 }
 
 function onError(error) {
   console.log(`Error: ${error}`);
+  setProgressStatus(0);
 }
 
 function onBrowserActionClicked(tab) {
   /* reload pages */
-  var querying = browser.tabs.query({currentWindow: true, url: [
-    "https://order.shop.jd.com/order/sSopUp_allList.action*",
-    "http://www.dasbu.com/seller/order/jd?ss%5Bstatus%5D=2&ss%5Bstart%5D="
-  ]});
-  querying.then(onTabs, onError);
-
-
   browser.tabs.query({currentWindow: true, url: [
-    "https://www.baidu.com/"
+    "https://order.shop.jd.com/order/sSopUp_allList.action*"
   ]})
-  .then(onBaiduFound)
+  .then(onJDFound)
+  .then(onJDReload)
+  .then(onFakeOrderFound)
+  .then(onFakeOrderReload)
   .catch(onError);
 
   /* clear existing port */
