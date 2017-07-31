@@ -108,15 +108,7 @@ function onFakeOrderMsg(m) {
     } else {
       total = m.data;
     }
-    console.log("=============> total order : " + total.toString());
-
-    if (total > 0) {
-      nxt.action = "loadDetail";
-      nxt.target = "FakeOrder";
-      nxt.data = cur;
-    } else {
-      setProgressStatus(0);
-    }
+    handleNext();
   } else if (m.reply == "detail") {
     if (m.data == "ok") {
       nxt.action = "getOrderID";
@@ -128,17 +120,23 @@ function onFakeOrderMsg(m) {
   } else if (m.reply == "sureDone") {
     if (m.data == "ok") {
       total--;
-      if (cur < total) {
-        nxt.action = "loadDetail";
-        nxt.target = "FakeOrder";
-        nxt.data = cur;
-      } else {
-        setProgress(0);
-      }
+      handleNext();
     } else {
       nxt.action = "sureDone";
       nxt.target = "FakeOrder";
     }
+  }
+}
+
+function handleNext()
+{
+  if (cur < total) {
+    log(`=============> progressing : ${cur} / ${total}`);
+    nxt.action = "loadDetail";
+    nxt.target = "FakeOrder";
+    nxt.data = cur;
+  } else {
+    setProgressStatus(0);
   }
 }
 
@@ -150,6 +148,9 @@ function onDetailMsg(m) {
       orderID = m.data;
       nxt.action = "closeDetail";
       nxt.target = "Background";
+    } else {
+      cur++;
+      handleNext();
     }
   }
 }
