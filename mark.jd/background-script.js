@@ -103,9 +103,8 @@ function onFakeOrderMsg(m) {
 
   if (m.reply == "total") {
     cur = 0;
-    if (m.data == undefined) {
-      total = 0;
-    } else {
+    total = 0;
+    if (m.data != undefined) {
       total = m.data;
     }
     handleNext();
@@ -122,8 +121,8 @@ function onFakeOrderMsg(m) {
       total--;
       handleNext();
     } else {
-      nxt.action = "sureDone";
-      nxt.target = "FakeOrder";
+      cur++;
+      handleNext();
     }
   }
 }
@@ -162,6 +161,9 @@ function onJDMsg(m) {
       nxt.action = "editMark";
       nxt.target = "JD";
       nxt.data = orderID;
+    } else {
+      cur++;
+      handleNext();
     }
   } else if (m.reply == "editMark") {
     if (m.data == "ok") {
@@ -169,15 +171,17 @@ function onJDMsg(m) {
       nxt.target = "JD";
       nxt.data = "";
     } else {
-      nxt.action = "editMark";
-      nxt.target = "JD";
-      nxt.data = orderID;
+      cur++;
+      handleNext();
     }
   } else if (m.reply == "setMark") {
     if (m.data == "ok") {
       nxt.action = "markDone";
       nxt.target = "FakeOrder";
       nxt.data = cur;
+    } else {
+      cur++;
+      handleNext();
     }
   }
 }
