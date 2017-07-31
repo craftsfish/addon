@@ -68,7 +68,8 @@ function onMsg(m)
 {
   console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx test message received!");
   console.log(m);
-  var x = $("a:contains('待审核订单')")[0].childNodes[1];
+  //var x = $("a:contains('待审核订单')")[0].childNodes[1];
+  var x = $("a:contains('待审核订单')")[0].innerHTML;
   if (x == undefined) {
     return Promise.reject(new Error("no order to be handled"));
   } else {

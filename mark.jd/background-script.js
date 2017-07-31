@@ -10,6 +10,7 @@ var orderID = "";
 var progressing = 0;
 var d = new Date();
 var FakeOrderTabID;
+var FakeOrderCompletePromiseResolve = undefined;
 const taskDelay = 5*60*1000;
 var lastDone = d.getTime() - taskDelay;
 
@@ -41,7 +42,8 @@ function onFakeOrderReload() {
 function onFakeOrderFound(tabs) {
   if (tabs.length == 1) {
     FakeOrderTabID = tabs[0].id;
-    return browser.tabs.reload(tabs[0].id);
+    browser.tabs.reload(tabs[0].id);
+    return FakeOrderCompletePromise = new Promise((resolve, reject) => {FakeOrderCompletePromiseResolve = resolve;});
   } else {
     throw new Error('failed to found FakeOrder tab');
   }
@@ -123,7 +125,14 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
     var i = 0;
     for (i=0; i<Pages.length; i++) {
       if (tabInfo.url.match(Pages[i].regexp) != null) {
+        //log("================================" + Pages[i].name + "loaded");
         Pages[i].tabId = tabId;
+        if (Pages[i].name == "FakeOrder") {
+          if (FakeOrderCompletePromiseResolve) {
+            FakeOrderCompletePromiseResolve("ok");
+            FakeOrderCompletePromiseResolve = undefined;
+          }
+        }
       }
     }
   }
