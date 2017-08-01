@@ -73,6 +73,12 @@ function queryTotal()
   }
 }
 
+function markDone1(i) {
+  $("a:contains('确认')")[0].click()
+  return Promise.resolve("ok");
+}
+
+
 function onMsg(m)
 {
   //console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx test message received!");
@@ -81,6 +87,8 @@ function onMsg(m)
     return queryTotal();
   } else if (m.action == "openDetail") {
     return openDetail(m.data);
+  } else if (m.action == "markDone") {
+    return markDone1();
   }
 }
 browser.runtime.onMessage.addListener(onMsg);

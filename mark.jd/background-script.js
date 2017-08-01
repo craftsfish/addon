@@ -28,8 +28,13 @@ function setProgressStatus(v)
   }
 }
 
+function onMarkDone(m) {
+  log("=========================> mark done!");
+}
+
 function onSetMark(m) {
-  log("=========================> set mark done!");
+  log("=========================> set mark complete!");
+  return sndMsg(Pages[ID_FAKE].tabId, "markDone");
 }
 
 function onEditMark(m) {
@@ -79,6 +84,7 @@ function handleOrders() {
   .then(onQueryResult)
   .then(onEditMark)
   .then(onSetMark)
+  .then(onMarkDone)
   .catch(onError);
 }
 
