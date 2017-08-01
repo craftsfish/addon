@@ -54,7 +54,6 @@ function sureDone() {
 
 function openDetail(i) {
   var d = $("a.xq")[i];
-  return Promise.resolve("opening"); /* TODO : remove it */
   if (d) {
     d.click();
     return Promise.resolve("opening");
@@ -67,7 +66,6 @@ function openDetail(i) {
 function queryTotal()
 {
   var x = $("a:contains('待审核订单')")[0].childNodes[1];
-  return Promise.resolve(1); /* TODO : remove it */
   if (x == undefined) {
     return Promise.reject(new Error("no order to be handled"));
   } else {
@@ -77,8 +75,8 @@ function queryTotal()
 
 function onMsg(m)
 {
-  console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx test message received!");
-  console.log(m);
+  //console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx test message received!");
+  //console.log(m);
   if (m.action == "queryTotal") {
     return queryTotal();
   } else if (m.action == "openDetail") {

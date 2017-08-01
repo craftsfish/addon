@@ -28,16 +28,23 @@ function setProgressStatus(v)
   }
 }
 
-/*
- * Browser Action Handling
- */
+function onDetailClosed(m) {
+  log("=========================> detail closed!");
+}
+
+function onOrderGet(m) {
+  log("=========================> order ID get!");
+  log(m);
+  orderID = m;
+  return browser.tabs.remove(Pages[ID_DETAIL].tabId);
+}
+
 function onDetailLoad() {
   log("=========================> Detail is loaded!");
+  return sndMsg(Pages[ID_DETAIL].tabId, "getOrderID");
 }
 
 function onOpeningDetail() {
-  nxt.action = "getOrderID";
-  nxt.target = "Detail";
   log("=========================> Detail is opening!");
   return new Promise((resolve, reject) => {Pages[ID_DETAIL].resolve = resolve;});
 }
@@ -46,6 +53,8 @@ function handleOrders() {
   sndMsg(Pages[ID_FAKE].tabId, "openDetail", cur)
   .then(onOpeningDetail)
   .then(onDetailLoad)
+  .then(onOrderGet)
+  .then(onDetailClosed)
   .catch(onError);
 }
 
@@ -120,9 +129,7 @@ browser.browserAction.onClicked.addListener(onBrowserActionClicked);
 var Pages = [
   {name:"FakeOrder", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd\\\?ss%5Bstatus%5D=2&ss%5Bstart%5D=.*$"),
     onMsg: onFakeOrderMsg, onDisconnect: onPortDisconnect},
-  //{name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$"),
-    //onMsg: onDetailMsg, onDisconnect: onPortDisconnect},
-  {name:"Detail", regexp: new RegExp("^https:\/\/www.baidu.com.*$"),
+  {name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$"),
     onMsg: onDetailMsg, onDisconnect: onPortDisconnect},
   {name:"JD", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sSopUp_allList.action.*$"),
     onMsg: onJDMsg, onDisconnect: onPortDisconnect}
@@ -148,7 +155,7 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
     var i = 0;
     for (i=0; i<Pages.length; i++) {
       if (tabInfo.url.match(Pages[i].regexp) != null) {
-        //log("================================" + Pages[i].name + "loaded");
+//        log("================================" + Pages[i].name + "loaded");
         Pages[i].tabId = tabId;
         if (Pages[i].resolve) {
           Pages[i].resolve("ok");
@@ -300,7 +307,7 @@ function onAction(a) {
 }
 
 function handleAlarm(alarmInfo) {
-  console.log("on alarm: " + alarmInfo.name);
+//  console.log("on alarm: " + alarmInfo.name);
 
   if (nxt.action != "") {
     onAction(nxt);
