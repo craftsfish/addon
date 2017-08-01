@@ -63,18 +63,22 @@ function sureDone() {
   }
 }
 
-
-function onMsg(m)
+function queryTotal()
 {
-  console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx test message received!");
-  console.log(m);
-  //var x = $("a:contains('待审核订单')")[0].childNodes[1];
-  var x = $("a:contains('待审核订单')")[0].innerHTML;
+  var x = $("a:contains('待审核订单')")[0].childNodes[1];
   if (x == undefined) {
     return Promise.reject(new Error("no order to be handled"));
   } else {
-    return Promise.resolve({reply: "total", data: x});
+    return Promise.resolve(parseInt(x.innerHTML));
   }
-  
+}
+
+function onMsg(m)
+{
+  //console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx test message received!");
+  //console.log(m);
+  if (m.action == "queryTotal") {
+    return queryTotal();
+  }
 }
 browser.runtime.onMessage.addListener(onMsg);

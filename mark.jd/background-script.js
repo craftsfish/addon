@@ -38,7 +38,7 @@ function onTotalReceived(m){
 
 function onFakeOrderReload() {
   log("=========================> FakeOrder reloaded!");
-  return browser.tabs.sendMessage(FakeOrderTabID, nxt);
+  return sndMsg(FakeOrderTabID, "queryTotal");
 }
 
 function onFakeOrderFound(tabs) {
@@ -310,4 +310,8 @@ function err(m) {
 
 function log(m) {
   console.log(m);
+}
+
+function sndMsg(id, a, d) {
+  return browser.tabs.sendMessage(id, {action: a, data: d});
 }
