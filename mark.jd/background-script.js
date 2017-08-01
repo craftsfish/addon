@@ -56,9 +56,20 @@ function onEditMark(m) {
   return sndMsg(ID_JD, "setMark");
 }
 
+function onOutOrderComplete() {
+  log("=========================> out order complete!");
+  window.history.back();
+  throw new Error("xxxxxxxxxxxxxxxxxxxxxxxxxxx");
+}
+
+function onOutOrder() {
+  log("=========================> out order issued!");
+  return createDelayPromise(2*1000);
+}
+
 function onOutComplete() {
   log("=========================> out complete!");
-  throw new Error("xxxxxxxxxxxxxxxxxxxxxxxxxxx");
+  return sndMsg(ID_OUT, "outOrder");
 }
 
 function onOutIssued() {
@@ -165,6 +176,8 @@ function handleOrders() {
   .then(onOrderClose)
   .then(onOutIssued)
   .then(onOutComplete)
+  .then(onOutOrder)
+  .then(onOutOrderComplete)
   .then(onEditMark)
   .then(onSetMark)
   .then(onMarkDoneIssued)
@@ -242,6 +255,8 @@ function startProcessing() {
   .then(onOrderClose)
   .then(onOutIssued)
   .then(onOutComplete)
+  .then(onOutOrder)
+  .then(onOutOrderComplete)
   .then(onEditMark)
   .then(onSetMark)
   .then(onMarkDoneIssued)
@@ -275,13 +290,13 @@ var Pages = [
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   if (changeInfo.status == "complete") { /* loading complete */
-    console.log(changeInfo);
-    console.log(tabInfo);
+//    console.log(changeInfo);
+//    console.log(tabInfo);
 
     var i = 0;
     for (i=0; i<Pages.length; i++) {
       if (tabInfo.url.match(Pages[i].regexp) != null) {
-        log("================================" + Pages[i].name + "loaded");
+ //       log("================================" + Pages[i].name + "loaded");
         Pages[i].tabId = tabId;
         if (Pages[i].resolve) {
           Pages[i].resolve("ok");

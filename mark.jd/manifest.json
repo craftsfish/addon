@@ -31,6 +31,10 @@
       "js": ["jquery/jquery-1.4.min.js"]
     },
     {
+      "matches": ["https://order.shop.jd.com/order/sopUp_oneOut.action*"],
+      "js": ["content-script-out.js"]
+    },
+    {
       "matches": ["https://neworder.shop.jd.com/order/orderDetail?orderId=*"],
       "js": ["content-script-order-info.js"]
     },
