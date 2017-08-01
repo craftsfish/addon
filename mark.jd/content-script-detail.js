@@ -1,28 +1,4 @@
-const ID = "Detail";
-console.log("content script of " + ID + " is loaded!");
-
-var myPort = browser.runtime.connect({name: ID});
-function sendMsg(m)
-{
-  m.id = ID;
-  myPort.postMessage(m);
-}
-myPort.onMessage.addListener(onBGMsg);
-
-function onBGMsg(m) {
-  console.log("In " + ID + " script, received message from background script: ");
-  console.log(m);
-
-  if (m.action == "getOrderID") {
-    sendMsg({reply: "orderID", data: getOrderID()});
-  }
-}
-
-function getOrderID() {
-  return $("div.row:contains('平台订单')")[0].childNodes[3].innerHTML.match(/\d+/)[0];
-}
-
-function getOrderID1()
+function getOrderID()
 {
   var x = $("div.row:contains('平台订单')")[0].childNodes[3].innerHTML.match(/\d+/)[0];
   if (x == undefined) {
@@ -34,10 +10,8 @@ function getOrderID1()
 
 function onMsg(m)
 {
-  console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx test message received!");
-  console.log(m);
   if (m.action == "getOrderID") {
-    return getOrderID1();
+    return getOrderID();
   }
 }
 browser.runtime.onMessage.addListener(onMsg);

@@ -31,7 +31,7 @@
       "js": ["jquery/jquery-1.4.min.js"]
     },
     {
-      "matches": ["https://order.shop.jd.com/order/sSopUp_allList.action*"],
+      "matches": ["https://order.shop.jd.com/order/sopUp_waitOutList.action*"],
       "js": ["content-script-jd.js"]
     },
     {

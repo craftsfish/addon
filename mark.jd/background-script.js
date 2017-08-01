@@ -1,33 +1,22 @@
 const ID_FAKE = 0;
 const ID_DETAIL = 1;
 const ID_JD = 2;
-
-var nxt = {
-  action: "",
-  target: "",
-  data: ""
-};
+const taskDelay = 5*60*1000;
 
 var total = -1;
 var cur = -1;
 var orderID = "";
-var progressing = 0;
-var d = new Date();
-const taskDelay = 5*60*1000;
-var lastDone = d.getTime() - taskDelay;
 var delayResolve = undefined;
+var myPromise = {expireAt: -1, resolve: undefined, reject: undefined};
 
-function setProgressStatus(v)
-{
-  progressing = v;
-  if (progressing == 0) {
-    log("=========================> progress stops!");
-    var d = new Date();
-    lastDone = d.getTime();
-  } else {
-    log("=========================> progress starts!");
-  }
+function setMyPromise(timeout) {
+  myPromise.expireAt = new Date().getTime() + timeout;
+  return new Promise((resolve, reject)=>{myPromise.resolve = resolve; myPromise.reject = reject});
 }
+
+/* fire progress immediately */
+setMyPromise(0)
+.then(startProcessing);
 
 function onOrderError(error) {
   console.log(`Error: ${error}`);
@@ -48,7 +37,7 @@ function onSureDoneIssued(m) {
 
 function onMarkDone(m) {
   log("=========================> mark done!");
-  return sndMsg(Pages[ID_FAKE].tabId, "sureDone");
+  return sndMsg(ID_FAKE, "sureDone");
 }
 
 function onMarkDoneIssued(m) {
@@ -58,17 +47,17 @@ function onMarkDoneIssued(m) {
 
 function onSetMark(m) {
   log("=========================> set mark complete!");
-  return sndMsg(Pages[ID_FAKE].tabId, "markDone");
+  return sndMsg(ID_FAKE, "markDone");
 }
 
 function onEditMark(m) {
   log("=========================> edit mark pop launched!");
-  return sndMsg(Pages[ID_JD].tabId, "setMark");
+  return sndMsg(ID_JD, "setMark");
 }
 
 function onQueryResult(m) {
   log("=========================> query result!");
-  return sndMsg(Pages[ID_JD].tabId, "editMark", orderID);
+  return sndMsg(ID_JD, "editMark", orderID);
 }
 
 function onQeuryIssued(m) {
@@ -78,19 +67,24 @@ function onQeuryIssued(m) {
 
 function onDetailClosed(m) {
   log("=========================> detail closed!");
-  return sndMsg(Pages[ID_JD].tabId, "queryOrder", orderID);
+  return sndMsg(ID_JD, "queryOrder", orderID);
+}
+
+function onDetailCloseDelayed(m) {
+  log("=========================> detail closed command fired!");
+  return browser.tabs.remove(Pages[ID_DETAIL].tabId);
 }
 
 function onOrderGet(m) {
   log("=========================> order ID get!");
   log(m);
   orderID = m;
-  return browser.tabs.remove(Pages[ID_DETAIL].tabId);
+  return new Promise((resolve) => {resolve("ok");});
 }
 
 function onDetailLoad() {
   log("=========================> Detail is loaded!");
-  return sndMsg(Pages[ID_DETAIL].tabId, "getOrderID");
+  return sndMsg(ID_DETAIL, "getOrderID");
 }
 
 function onOpeningDetail() {
@@ -100,15 +94,16 @@ function onOpeningDetail() {
 
 function handleOrders() {
   if (cur >= total) {
-    setProgressStatus(0);
+    setMyPromise(taskDelay).then(startProcessing);
     return;
   }
 
   log(`>>>>>>>>>>>>>>>>>>>>>>>>>>>>  handling: ${cur}/${total}`);
-  sndMsg(Pages[ID_FAKE].tabId, "openDetail", cur)
+  sndMsg(ID_FAKE, "openDetail", cur)
   .then(onOpeningDetail)
   .then(onDetailLoad)
   .then(onOrderGet)
+  .then(onDetailCloseDelayed)
   .then(onDetailClosed)
   .then(onQeuryIssued)
   .then(onQueryResult)
@@ -131,7 +126,7 @@ function onTotalReceived(m){
 
 function onFakeOrderReload() {
   log("=========================> FakeOrder reloaded!");
-  return sndMsg(Pages[ID_FAKE].tabId, "queryTotal");
+  return sndMsg(ID_FAKE, "queryTotal");
 }
 
 function onFakeOrderFound(tabs) {
@@ -161,20 +156,20 @@ function onJDFound(tabs) {
 
 function onError(error) {
   console.log(`Error: ${error}`);
-  setProgressStatus(0);
+  setMyPromise(taskDelay).then(startProcessing);
 }
 
-function onBrowserActionClicked(tab) {
+function startProcessing() {
+  log("------------ start processing");
+
   /* clear existing port */
   var i = 0;
   for (i=0; i<Pages.length; i++) {
     Pages[i].port = undefined;
   }
 
-  setProgressStatus(1);
-
   browser.tabs.query({currentWindow: true, url: [
-    "https://order.shop.jd.com/order/sSopUp_allList.action*"
+    "https://order.shop.jd.com/order/sopUp_waitOutList.action*"
   ]})
   .then(onJDFound)
   .then(onJDReload)
@@ -184,29 +179,14 @@ function onBrowserActionClicked(tab) {
   .catch(onError);
 }
 
-browser.browserAction.onClicked.addListener(onBrowserActionClicked);
-
 /*
  * Tabs Updated Handling
  */
 var Pages = [
-  {name:"FakeOrder", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd\\\?ss%5Bstatus%5D=2&ss%5Bstart%5D=.*$"),
-    onMsg: onFakeOrderMsg, onDisconnect: onPortDisconnect},
-  {name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$"),
-    onMsg: onDetailMsg, onDisconnect: onPortDisconnect},
-  {name:"JD", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sSopUp_allList.action.*$"),
-    onMsg: onJDMsg, onDisconnect: onPortDisconnect}
+  {name:"FakeOrder", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd\\\?ss%5Bstatus%5D=2&ss%5Bstart%5D=.*$")},
+  {name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$")},
+  {name:"JD", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_waitOutList.action.*$")}
 ];
-
-function getPage(name) {
-  var i = 0;
-  for (i=0; i<Pages.length; i++) {
-    if (Pages[i].name == name) {
-      return Pages[i];
-    }
-  }
-  return undefined;
-}
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   if (changeInfo.status == "complete") { /* loading complete */
@@ -232,142 +212,14 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
 browser.tabs.onUpdated.addListener(onTabsUpdated);
 
 /*
- * Communication Channel
- */
-function onFakeOrderMsg(m) {
-  console.log(m);
-
-  if (m.reply == "total") {
-    cur = 0;
-    total = 0;
-    if (m.data != undefined) {
-      total = m.data;
-    }
-    handleNext();
-  } else if (m.reply == "detail") {
-    if (m.data == "ok") {
-      nxt.action = "getOrderID";
-      nxt.target = "Detail";
-    }
-  } else if (m.reply == "markDone") {
-    nxt.action = "sureDone";
-    nxt.target = "FakeOrder";
-  } else if (m.reply == "sureDone") {
-    if (m.data == "ok") {
-      total--;
-      handleNext();
-    } else {
-      cur++;
-      handleNext();
-    }
-  }
-}
-
-function handleNext()
-{
-  if (cur < total) {
-    log(`=============> progressing : ${cur} / ${total}`);
-    nxt.action = "loadDetail";
-    nxt.target = "FakeOrder";
-    nxt.data = cur;
-  } else {
-    setProgressStatus(0);
-  }
-}
-
-function onDetailMsg(m) {
-  console.log(m);
-
-  if (m.reply == "orderID") {
-    if (m.data != undefined) {
-      orderID = m.data;
-      nxt.action = "closeDetail";
-      nxt.target = "Background";
-    } else {
-      cur++;
-      handleNext();
-    }
-  }
-}
-
-function onJDMsg(m) {
-  console.log(m);
-  if (m.reply == "queryOrder") {
-    if (m.data == "ok") {
-      nxt.action = "editMark";
-      nxt.target = "JD";
-      nxt.data = orderID;
-    } else {
-      cur++;
-      handleNext();
-    }
-  } else if (m.reply == "editMark") {
-    if (m.data == "ok") {
-      nxt.action = "setMark";
-      nxt.target = "JD";
-      nxt.data = "";
-    } else {
-      cur++;
-      handleNext();
-    }
-  } else if (m.reply == "setMark") {
-    if (m.data == "ok") {
-      nxt.action = "markDone";
-      nxt.target = "FakeOrder";
-      nxt.data = cur;
-    } else {
-      cur++;
-      handleNext();
-    }
-  }
-}
-
-function onPortDisconnect(p)
-{
-  log(`=======================> port : ${p.name} disconnect!`);
-  getPage(p.name).port = undefined;
-}
-
-function connected(p) {
-  var Page =  getPage(p.name);
-  if (Page != undefined) {
-    Page.port = p;
-    p.onDisconnect.addListener(Page.onDisconnect);
-    p.onMessage.addListener(Page.onMsg);
-  }
-}
-
-browser.runtime.onConnect.addListener(connected);
-
-/*
  * periodic task
  */
-const delayInMinutes = 0.05;
-const periodInMinutes = 0.05;
+const delayInMinutes = 0.1;
+const periodInMinutes = 0.1;
 browser.alarms.create("my-periodic-alarm", {
   delayInMinutes,
   periodInMinutes
 });
-
-function onAction(a) {
-  if (a.target == "Background") {
-    if (a.action == "closeDetail") {
-      browser.tabs.remove(getPage("Detail").tabId);
-      a.action = "queryOrder";
-      a.target = "JD";
-      a.data = orderID;
-    }
-    return;
-  }
-
-  var p = getPage(a.target);
-  if (p.port != undefined) {
-    p.port.postMessage(a);
-    a.action = "";
-    a.target = "";
-    a.data = "";
-  }
-}
 
 function handleAlarm(alarmInfo) {
 //  console.log("on alarm: " + alarmInfo.name);
@@ -377,19 +229,15 @@ function handleAlarm(alarmInfo) {
     delayResolve = undefined;
   }
 
-  if (nxt.action != "") {
-    onAction(nxt);
-  } else if (progressing == 0) {
-    var d = new Date();
-    if (d.getTime() - lastDone - taskDelay > 0) {
-      lastDone += 1000 * taskDelay;
-      onBrowserActionClicked(undefined);
+  if (myPromise.expireAt != -1) {
+    if (new Date().getTime() > myPromise.expireAt) {
+      myPromise.resolve("TimeOut");
+      myPromise.expireAt = -1;
     }
   }
 }
 
 browser.alarms.onAlarm.addListener(handleAlarm);
-
 
 function err(m) {
   console.log(m);
@@ -400,5 +248,6 @@ function log(m) {
 }
 
 function sndMsg(id, a, d) {
-  return browser.tabs.sendMessage(id, {action: a, data: d});
+  log(`----------> send message to ${Pages[id].name} : action is ${a}, data is ${d}`);
+  return browser.tabs.sendMessage(Pages[id].tabId, {action: a, data: d});
 }
