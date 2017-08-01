@@ -54,6 +54,7 @@ function sureDone() {
 
 function openDetail(i) {
   var d = $("a.xq")[i];
+  return Promise.resolve("opening"); /* TODO : remove it */
   if (d) {
     d.click();
     return Promise.resolve("opening");

@@ -13,6 +13,8 @@ var FakeOrderTabID;
 var FakeOrderPromise = undefined;
 var JDTabID;
 var JDPromise = undefined;
+var DetailTabID;
+var DetailPromise = undefined;
 const taskDelay = 5*60*1000;
 var lastDone = d.getTime() - taskDelay;
 
@@ -31,15 +33,21 @@ function setProgressStatus(v)
 /*
  * Browser Action Handling
  */
+function onDetailLoad() {
+  log("=========================> Detail is loaded!");
+}
+
 function onOpeningDetail() {
   nxt.action = "getOrderID";
   nxt.target = "Detail";
   log("=========================> Detail is opening!");
+  return new Promise((resolve, reject) => {DetailPromise = resolve;});
 }
 
 function handleOrders() {
   sndMsg(FakeOrderTabID, "openDetail", cur)
-  .then()
+  .then(onOpeningDetail)
+  .then(onDetailLoad)
   .catch(onError);
 }
 
