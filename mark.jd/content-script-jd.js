@@ -64,6 +64,15 @@ function getOrderID1()
   }
 }
 
+function setMark1()
+{
+  $("#remarkArea")[0].value = "1 AT";
+  $("#tagblue")[0].click();
+  $("#rSubmitButton")[0].click();
+  return Promise.resolve("ok");
+}
+
+
 function editMark1(id)
 {
   if ($("span:contains('订单编号')")[0].childNodes[1].innerHTML == id) {
@@ -95,6 +104,8 @@ function onMsg(m)
     return query1(m.data);
   } else if (m.action == "editMark") {
     return editMark1(m.data);
+  } else if (m.action == "setMark") {
+    return setMark1(m.data);
   }
 }
 browser.runtime.onMessage.addListener(onMsg);

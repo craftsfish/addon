@@ -28,8 +28,13 @@ function setProgressStatus(v)
   }
 }
 
+function onSetMark(m) {
+  log("=========================> set mark done!");
+}
+
 function onEditMark(m) {
   log("=========================> edit mark pop launched!");
+  return sndMsg(Pages[ID_JD].tabId, "setMark");
 }
 
 function onQueryResult(m) {
@@ -73,6 +78,7 @@ function handleOrders() {
   .then(onQeuryIssued)
   .then(onQueryResult)
   .then(onEditMark)
+  .then(onSetMark)
   .catch(onError);
 }
 
