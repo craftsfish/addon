@@ -31,9 +31,16 @@ function setProgressStatus(v)
 /*
  * Browser Action Handling
  */
+function handleOrders() {
+  handleNext();
+}
+
 function onTotalReceived(m){
   log("=========================> Total received!");
   log(m);
+  cur = 0;
+  total = m;
+  handleOrders();
 }
 
 function onFakeOrderReload() {
@@ -81,8 +88,6 @@ function onBrowserActionClicked(tab) {
   }
 
   setProgressStatus(1);
-  nxt.action = "queryTotal";
-  nxt.target = "FakeOrder";
 
   browser.tabs.query({currentWindow: true, url: [
     "https://order.shop.jd.com/order/sSopUp_allList.action*"

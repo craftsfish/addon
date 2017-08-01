@@ -15,8 +15,6 @@ function onBGMsg(m) {
 
   if (m.action == "loadDetail") {
     loadDetail(m.data);
-  } else if (m.action == "queryTotal") {
-    getTotal();
   } else if (m.action == "markDone") {
     markDone(m.data);
   } else if (m.action == "sureDone") {
@@ -27,15 +25,6 @@ function onBGMsg(m) {
 function getItem(i)
 {
   return $("a.xq")[i];
-}
-
-function getTotal() {
-  var x = $("a:contains('待审核订单')")[0].childNodes[1];
-  if (x == undefined) {
-    sendMsg({reply: "total", data: undefined});
-  } else {
-    sendMsg({reply: "total", data: parseInt(x.innerHTML)});
-  }
 }
 
 function loadDetail(i) {
@@ -66,6 +55,7 @@ function sureDone() {
 function queryTotal()
 {
   var x = $("a:contains('待审核订单')")[0].childNodes[1];
+  return Promise.resolve(1); /* TODO : remove it */
   if (x == undefined) {
     return Promise.reject(new Error("no order to be handled"));
   } else {
