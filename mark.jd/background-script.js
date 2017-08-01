@@ -1,3 +1,7 @@
+const ID_FAKE = 0;
+const ID_DETAIL = 1;
+const ID_JD = 2;
+
 var nxt = {
   action: "",
   target: "",
@@ -9,12 +13,6 @@ var cur = -1;
 var orderID = "";
 var progressing = 0;
 var d = new Date();
-var FakeOrderTabID;
-var FakeOrderPromise = undefined;
-var JDTabID;
-var JDPromise = undefined;
-var DetailTabID;
-var DetailPromise = undefined;
 const taskDelay = 5*60*1000;
 var lastDone = d.getTime() - taskDelay;
 
@@ -41,11 +39,11 @@ function onOpeningDetail() {
   nxt.action = "getOrderID";
   nxt.target = "Detail";
   log("=========================> Detail is opening!");
-  return new Promise((resolve, reject) => {DetailPromise = resolve;});
+  return new Promise((resolve, reject) => {Pages[ID_DETAIL].resolve = resolve;});
 }
 
 function handleOrders() {
-  sndMsg(FakeOrderTabID, "openDetail", cur)
+  sndMsg(Pages[ID_FAKE].tabId, "openDetail", cur)
   .then(onOpeningDetail)
   .then(onDetailLoad)
   .catch(onError);
@@ -61,14 +59,13 @@ function onTotalReceived(m){
 
 function onFakeOrderReload() {
   log("=========================> FakeOrder reloaded!");
-  return sndMsg(FakeOrderTabID, "queryTotal");
+  return sndMsg(Pages[ID_FAKE].tabId, "queryTotal");
 }
 
 function onFakeOrderFound(tabs) {
   if (tabs.length == 1) {
-    FakeOrderTabID = tabs[0].id;
     browser.tabs.reload(tabs[0].id);
-    return new Promise((resolve, reject) => {FakeOrderPromise = resolve;});
+    return new Promise((resolve, reject) => {Pages[ID_FAKE].resolve = resolve;});
   } else {
     throw new Error('failed to found FakeOrder tab');
   }
@@ -83,9 +80,8 @@ function onJDReload() {
 
 function onJDFound(tabs) {
   if (tabs.length == 1) {
-    JDTabID = tabs[0].id;
     browser.tabs.reload(tabs[0].id);
-    return new Promise((resolve, reject) => {JDPromise = resolve;});
+    return new Promise((resolve, reject) => {Pages[ID_JD].resolve = resolve;});
   } else {
     throw new Error('failed to found JD tab');
   }
@@ -124,7 +120,9 @@ browser.browserAction.onClicked.addListener(onBrowserActionClicked);
 var Pages = [
   {name:"FakeOrder", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd\\\?ss%5Bstatus%5D=2&ss%5Bstart%5D=.*$"),
     onMsg: onFakeOrderMsg, onDisconnect: onPortDisconnect},
-  {name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$"),
+  //{name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$"),
+    //onMsg: onDetailMsg, onDisconnect: onPortDisconnect},
+  {name:"Detail", regexp: new RegExp("^https:\/\/www.baidu.com.*$"),
     onMsg: onDetailMsg, onDisconnect: onPortDisconnect},
   {name:"JD", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sSopUp_allList.action.*$"),
     onMsg: onJDMsg, onDisconnect: onPortDisconnect}
@@ -152,16 +150,9 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
       if (tabInfo.url.match(Pages[i].regexp) != null) {
         //log("================================" + Pages[i].name + "loaded");
         Pages[i].tabId = tabId;
-        if (Pages[i].name == "FakeOrder") {
-          if (FakeOrderPromise) {
-            FakeOrderPromise("ok");
-            FakeOrderPromise = undefined;
-          }
-        } else if (Pages[i].name == "JD") {
-          if (JDPromise) {
-            JDPromise("ok");
-            JDPromise = undefined;;
-          }
+        if (Pages[i].resolve) {
+          Pages[i].resolve("ok");
+          Pages[i].resolve = undefined;;
         }
       }
     }
