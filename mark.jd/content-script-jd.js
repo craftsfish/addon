@@ -1,6 +1,6 @@
 function setMark()
 {
-  $("#remarkArea")[0].value = "1 AT";
+  $("#remarkArea")[0].value = "1 AT canjiang lu";
   $("#tagblue")[0].click();
   $("#rSubmitButton")[0].click();
   return Promise.resolve("ok");

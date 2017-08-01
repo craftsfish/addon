@@ -161,13 +161,6 @@ function onError(error) {
 
 function startProcessing() {
   log("------------ start processing");
-
-  /* clear existing port */
-  var i = 0;
-  for (i=0; i<Pages.length; i++) {
-    Pages[i].port = undefined;
-  }
-
   browser.tabs.query({currentWindow: true, url: [
     "https://order.shop.jd.com/order/sopUp_waitOutList.action*"
   ]})
