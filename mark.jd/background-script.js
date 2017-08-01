@@ -2,6 +2,7 @@ const ID_FAKE = 0;
 const ID_DETAIL = 1;
 const ID_JD = 2;
 const ID_ORDER = 3;
+const ID_OUT = 4;
 const taskDelay = 5*60*1000;
 
 var total = -1;
@@ -55,9 +56,19 @@ function onEditMark(m) {
   return sndMsg(ID_JD, "setMark");
 }
 
+function onOutComplete() {
+  log("=========================> out complete!");
+  throw new Error("xxxxxxxxxxxxxxxxxxxxxxxxxxx");
+}
+
+function onOutIssued() {
+  log("=========================> out issued!");
+  return new Promise((resolve, reject) => {Pages[ID_OUT].resolve = resolve;});
+}
+
 function onOrderClose() {
   log("=========================> order close!");
-  throw new Error("xxxxxxxxxxxxxxxxxxxxxxxxxxx");
+  return sndMsg(ID_JD, "out");
 }
 
 function onOrderCloseDelayed() {
@@ -152,6 +163,8 @@ function handleOrders() {
   .then(onGetAddress)
   .then(onOrderCloseDelayed)
   .then(onOrderClose)
+  .then(onOutIssued)
+  .then(onOutComplete)
   .then(onEditMark)
   .then(onSetMark)
   .then(onMarkDoneIssued)
@@ -227,6 +240,8 @@ function startProcessing() {
   .then(onGetAddress)
   .then(onOrderCloseDelayed)
   .then(onOrderClose)
+  .then(onOutIssued)
+  .then(onOutComplete)
   .then(onEditMark)
   .then(onSetMark)
   .then(onMarkDoneIssued)
@@ -254,20 +269,19 @@ var Pages = [
   {name:"FakeOrder", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd\\\?ss%5Bstatus%5D=2&ss%5Bstart%5D=.*$")},
   {name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$")},
   {name:"JD", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_waitOutList.action.*$")},
-  {name:"ORDER", regexp: new RegExp("^https:\/\/neworder.shop.jd.com\/order\/orderDetail\\\?orderId=.*$")}
+  {name:"ORDER", regexp: new RegExp("^https:\/\/neworder.shop.jd.com\/order\/orderDetail\\\?orderId=.*$")},
+  {name:"OUT", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_oneOut.action\\\?.*$")}
 ];
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   if (changeInfo.status == "complete") { /* loading complete */
-/*
     console.log(changeInfo);
     console.log(tabInfo);
-*/
 
     var i = 0;
     for (i=0; i<Pages.length; i++) {
       if (tabInfo.url.match(Pages[i].regexp) != null) {
-//        log("================================" + Pages[i].name + "loaded");
+        log("================================" + Pages[i].name + "loaded");
         Pages[i].tabId = tabId;
         if (Pages[i].resolve) {
           Pages[i].resolve("ok");

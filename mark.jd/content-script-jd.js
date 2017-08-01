@@ -42,6 +42,13 @@ function query(v)
     return Promise.resolve("ok");
 }
 
+function out()
+{
+  var x = $("a:contains('出库')")[3];
+  new Promise((resolve)=>{resolve("ok")}).then(()=>{x.click()});
+  return Promise.resolve("ok");
+}
+
 function onMsg(m)
 {
   if (m.action == "queryOrder") {
@@ -52,6 +59,8 @@ function onMsg(m)
     return setMark(m.data);
   } else if (m.action == "openOrder") {
     return openOrder(m.data);
+  } else if (m.action == "out") {
+    return out();
   }
 }
 browser.runtime.onMessage.addListener(onMsg);
