@@ -78,17 +78,29 @@ function markDone1(i) {
   return Promise.resolve("ok");
 }
 
+function sureDone1() {
+  var btn = $("button:contains('确认返款')")[0];
+  if (btn != undefined) {
+    btn.click();
+    return Promise.resolve("ok");
+  } else {
+    return Promise.reject(new Error("no sure done button"));
+  }
+}
+
 
 function onMsg(m)
 {
-  //console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx test message received!");
-  //console.log(m);
+  console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx test message received!");
+  console.log(m);
   if (m.action == "queryTotal") {
     return queryTotal();
   } else if (m.action == "openDetail") {
     return openDetail(m.data);
   } else if (m.action == "markDone") {
     return markDone1();
+  } else if (m.action == "sureDone") {
+    return sureDone1();
   }
 }
 browser.runtime.onMessage.addListener(onMsg);
