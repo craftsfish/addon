@@ -6,16 +6,15 @@ const taskDelay = 5*60*1000;
 var total = -1;
 var cur = -1;
 var orderID = "";
-var delayResolve = undefined;
-var myPromise = {expireAt: -1, resolve: undefined, reject: undefined};
+var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
 
-function setMyPromise(timeout) {
-  myPromise.expireAt = new Date().getTime() + timeout;
-  return new Promise((resolve, reject)=>{myPromise.resolve = resolve; myPromise.reject = reject});
+function createDelayPromise(timeout) {
+  delayPromise.expireAt = new Date().getTime() + timeout;
+  return new Promise((resolve, reject)=>{delayPromise.resolve = resolve; delayPromise.reject = reject});
 }
 
 /* fire progress immediately */
-setMyPromise(0)
+createDelayPromise(0)
 .then(startProcessing);
 
 function onOrderError(error) {
@@ -42,7 +41,7 @@ function onMarkDone(m) {
 
 function onMarkDoneIssued(m) {
   log("=========================> mark done issued!");
-  return new Promise((resolve, reject) => {delayResolve = resolve;});
+  return createDelayPromise(5*1000);
 }
 
 function onSetMark(m) {
@@ -79,7 +78,7 @@ function onOrderGet(m) {
   log("=========================> order ID get!");
   log(m);
   orderID = m;
-  return new Promise((resolve) => {resolve("ok");});
+  return createDelayPromise(5*1000);
 }
 
 function onDetailLoad() {
@@ -94,7 +93,8 @@ function onOpeningDetail() {
 
 function handleOrders() {
   if (cur >= total) {
-    setMyPromise(taskDelay).then(startProcessing);
+    log("------------ stop processing");
+    createDelayPromise(taskDelay).then(startProcessing);
     return;
   }
 
@@ -156,7 +156,8 @@ function onJDFound(tabs) {
 
 function onError(error) {
   console.log(`Error: ${error}`);
-  setMyPromise(taskDelay).then(startProcessing);
+  log("------------ stop processing");
+  createDelayPromise(taskDelay).then(startProcessing);
 }
 
 function startProcessing() {
@@ -216,16 +217,10 @@ browser.alarms.create("my-periodic-alarm", {
 
 function handleAlarm(alarmInfo) {
 //  console.log("on alarm: " + alarmInfo.name);
-
-  if (delayResolve) {
-    delayResolve("delayed");
-    delayResolve = undefined;
-  }
-
-  if (myPromise.expireAt != -1) {
-    if (new Date().getTime() > myPromise.expireAt) {
-      myPromise.resolve("TimeOut");
-      myPromise.expireAt = -1;
+  if (delayPromise.expireAt != -1) {
+    if (new Date().getTime() > delayPromise.expireAt) {
+      delayPromise.resolve("TimeOut");
+      delayPromise.expireAt = -1;
     }
   }
 }
