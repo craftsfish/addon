@@ -10,7 +10,9 @@ var orderID = "";
 var progressing = 0;
 var d = new Date();
 var FakeOrderTabID;
-var FakeOrderCompletePromiseResolve = undefined;
+var FakeOrderPromise = undefined;
+var JDTabID;
+var JDPromise = undefined;
 const taskDelay = 5*60*1000;
 var lastDone = d.getTime() - taskDelay;
 
@@ -43,7 +45,7 @@ function onFakeOrderFound(tabs) {
   if (tabs.length == 1) {
     FakeOrderTabID = tabs[0].id;
     browser.tabs.reload(tabs[0].id);
-    return FakeOrderCompletePromise = new Promise((resolve, reject) => {FakeOrderCompletePromiseResolve = resolve;});
+    return new Promise((resolve, reject) => {FakeOrderPromise = resolve;});
   } else {
     throw new Error('failed to found FakeOrder tab');
   }
@@ -58,7 +60,9 @@ function onJDReload() {
 
 function onJDFound(tabs) {
   if (tabs.length == 1) {
-    return browser.tabs.reload(tabs[0].id);
+    JDTabID = tabs[0].id;
+    browser.tabs.reload(tabs[0].id);
+    return new Promise((resolve, reject) => {JDPromise = resolve;});
   } else {
     throw new Error('failed to found JD tab');
   }
@@ -128,9 +132,14 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
         //log("================================" + Pages[i].name + "loaded");
         Pages[i].tabId = tabId;
         if (Pages[i].name == "FakeOrder") {
-          if (FakeOrderCompletePromiseResolve) {
-            FakeOrderCompletePromiseResolve("ok");
-            FakeOrderCompletePromiseResolve = undefined;
+          if (FakeOrderPromise) {
+            FakeOrderPromise("ok");
+            FakeOrderPromise = undefined;
+          }
+        } else if (Pages[i].name == "JD") {
+          if (JDPromise) {
+            JDPromise("ok");
+            JDPromise = undefined;;
           }
         }
       }
