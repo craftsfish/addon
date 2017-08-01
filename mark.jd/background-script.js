@@ -55,9 +55,30 @@ function onEditMark(m) {
   return sndMsg(ID_JD, "setMark");
 }
 
+function onOrderClose() {
+  log("=========================> order close!");
+  throw new Error("xxxxxxxxxxxxxxxxxxxxxxxxxxx");
+}
+
+function onOrderCloseDelayed() {
+  log("=========================> order closed command fired!");
+  return browser.tabs.remove(Pages[ID_ORDER].tabId);
+}
+
+function onGetAddress(m) {
+  log("=========================> get address!");
+  log(m);
+  return createDelayPromise(2*1000);
+}
+
+function onMobileShowed() {
+  log("=========================> mobile showed!");
+  return sndMsg(ID_ORDER, "getAddress");
+}
+
 function onShowMobile() {
   log("=========================> show launched!");
-  throw new Error("xxxxxxxxxxxxxxxxxxxxxxxxxxx");
+  return createDelayPromise(2*1000);
 }
 
 function onOrderOpened(m) {
@@ -126,6 +147,11 @@ function handleOrders() {
   .then(onQueryResult)
   .then(onOpenOrderIssued)
   .then(onOrderOpened)
+  .then(onShowMobile)
+  .then(onMobileShowed)
+  .then(onGetAddress)
+  .then(onOrderCloseDelayed)
+  .then(onOrderClose)
   .then(onEditMark)
   .then(onSetMark)
   .then(onMarkDoneIssued)
@@ -197,6 +223,10 @@ function startProcessing() {
   .then(onOpenOrderIssued)
   .then(onOrderOpened)
   .then(onShowMobile)
+  .then(onMobileShowed)
+  .then(onGetAddress)
+  .then(onOrderCloseDelayed)
+  .then(onOrderClose)
   .then(onEditMark)
   .then(onSetMark)
   .then(onMarkDoneIssued)

@@ -16,10 +16,20 @@ function showMobile()
   }
 }
 
+function getAddress()
+{
+  var m = $("#mobile")[0].innerHTML;
+  var n = $("#mobile")[0].parentNode.parentNode.childNodes[0].childNodes[3].innerHTML;
+  var a = $("#mobile")[0].parentNode.parentNode.childNodes[2].childNodes[3].innerHTML;
+  return Promise.resolve("收货人:" + n + "   地址:" + a + " 手机号:" + m);
+}
+
 function onMsg(m)
 {
   if (m.action == "showMobile") {
     return showMobile();
+  } else if (m.action == "getAddress") {
+    return getAddress();
   }
 }
 browser.runtime.onMessage.addListener(onMsg);
