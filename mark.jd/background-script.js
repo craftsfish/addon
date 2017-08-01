@@ -31,8 +31,16 @@ function setProgressStatus(v)
 /*
  * Browser Action Handling
  */
+function onOpeningDetail() {
+  nxt.action = "getOrderID";
+  nxt.target = "Detail";
+  log("=========================> Detail is opening!");
+}
+
 function handleOrders() {
-  handleNext();
+  sndMsg(FakeOrderTabID, "openDetail", cur)
+  .then()
+  .catch(onError);
 }
 
 function onTotalReceived(m){

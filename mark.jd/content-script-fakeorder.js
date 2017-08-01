@@ -52,6 +52,17 @@ function sureDone() {
   }
 }
 
+function openDetail(i) {
+  var d = $("a.xq")[i];
+  if (d) {
+    d.click();
+    return Promise.resolve("opening");
+  } else {
+    return Promise.reject(new Error("no detail item"));
+  }
+}
+
+
 function queryTotal()
 {
   var x = $("a:contains('待审核订单')")[0].childNodes[1];
@@ -65,10 +76,12 @@ function queryTotal()
 
 function onMsg(m)
 {
-  //console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx test message received!");
-  //console.log(m);
+  console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx test message received!");
+  console.log(m);
   if (m.action == "queryTotal") {
     return queryTotal();
+  } else if (m.action == "openDetail") {
+    return openDetail(m.data);
   }
 }
 browser.runtime.onMessage.addListener(onMsg);
