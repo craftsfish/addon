@@ -28,8 +28,23 @@ function setProgressStatus(v)
   }
 }
 
+function onEditMark(m) {
+  log("=========================> edit mark pop launched!");
+}
+
+function onQueryResult(m) {
+  log("=========================> query result!");
+  return sndMsg(Pages[ID_JD].tabId, "editMark", orderID);
+}
+
+function onQeuryIssued(m) {
+  log("=========================> query issued!");
+  return new Promise((resolve, reject) => {Pages[ID_JD].resolve = resolve;});
+}
+
 function onDetailClosed(m) {
   log("=========================> detail closed!");
+  return sndMsg(Pages[ID_JD].tabId, "queryOrder", orderID);
 }
 
 function onOrderGet(m) {
@@ -55,6 +70,9 @@ function handleOrders() {
   .then(onDetailLoad)
   .then(onOrderGet)
   .then(onDetailClosed)
+  .then(onQeuryIssued)
+  .then(onQueryResult)
+  .then(onEditMark)
   .catch(onError);
 }
 

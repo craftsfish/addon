@@ -53,3 +53,48 @@ function setMark()
   $("#rSubmitButton")[0].click();
   sendMsg({reply: "setMark", data: "ok"});
 }
+
+function getOrderID1()
+{
+  var x = $("div.row:contains('平台订单')")[0].childNodes[3].innerHTML.match(/\d+/)[0];
+  if (x == undefined) {
+    return Promise.reject(new Error("failed to get orderID"));
+  } else {
+    return Promise.resolve(x);
+  }
+}
+
+function editMark1(id)
+{
+  if ($("span:contains('订单编号')")[0].childNodes[1].innerHTML == id) {
+    var x = $("a:contains('修改备注')")[0];
+    if (x == undefined) {
+      x = $("a:contains('添加备注')")[0];
+    }
+
+    if (x != undefined) {
+      x.click();
+      return Promise.resolve("ok");
+    }
+  }
+  return Promise.reject(new Error("cannot find edit mark button"));
+}
+
+function query1(v)
+{
+    $("input#orderId")[0].value = v;
+    $("#orderQueryBtn")[0].click();
+    return Promise.resolve("ok");
+}
+
+function onMsg(m)
+{
+  console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx test message received!");
+  console.log(m);
+  if (m.action == "queryOrder") {
+    return query1(m.data);
+  } else if (m.action == "editMark") {
+    return editMark1(m.data);
+  }
+}
+browser.runtime.onMessage.addListener(onMsg);
