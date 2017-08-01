@@ -6,6 +6,18 @@ function setMark()
   return Promise.resolve("ok");
 }
 
+function openOrder(id)
+{
+  if ($("span:contains('订单编号')")[0].childNodes[1].innerHTML == id) {
+    var x = $("a:contains('查看详情')")[0];
+    if (x) {
+      x.click();
+      return Promise.resolve("ok");
+    }
+  }
+  return Promise.reject(new Error("cannot find open detail button"));
+}
+
 
 function editMark(id)
 {
@@ -38,6 +50,8 @@ function onMsg(m)
     return editMark(m.data);
   } else if (m.action == "setMark") {
     return setMark(m.data);
+  } else if (m.action == "openOrder") {
+    return openOrder(m.data);
   }
 }
 browser.runtime.onMessage.addListener(onMsg);

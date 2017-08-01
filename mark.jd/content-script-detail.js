@@ -4,7 +4,8 @@ function getOrderID()
   if (x == undefined) {
     return Promise.reject(new Error("failed to get orderID"));
   } else {
-    return Promise.resolve(x);
+    //return Promise.resolve(x);
+    return Promise.resolve("59868468133");
   }
 }
 

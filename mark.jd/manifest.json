@@ -31,6 +31,10 @@
       "js": ["jquery/jquery-1.4.min.js"]
     },
     {
+      "matches": ["https://neworder.shop.jd.com/order/orderDetail?orderId=*"],
+      "js": ["content-script-order-info.js"]
+    },
+    {
       "matches": ["https://order.shop.jd.com/order/sopUp_waitOutList.action*"],
       "js": ["content-script-jd.js"]
     },

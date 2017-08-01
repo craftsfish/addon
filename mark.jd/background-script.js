@@ -1,11 +1,12 @@
 const ID_FAKE = 0;
 const ID_DETAIL = 1;
 const ID_JD = 2;
+const ID_ORDER = 3;
 const taskDelay = 5*60*1000;
 
 var total = -1;
 var cur = -1;
-var orderID = "";
+var orderID = "59868468133";
 var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
 
 function createDelayPromise(timeout) {
@@ -54,9 +55,25 @@ function onEditMark(m) {
   return sndMsg(ID_JD, "setMark");
 }
 
+function onShowMobile() {
+  log("=========================> show launched!");
+  throw new Error("xxxxxxxxxxxxxxxxxxxxxxxxxxx");
+}
+
+function onOrderOpened(m) {
+  log("=========================> order opened!");
+  return sndMsg(ID_ORDER, "showMobile");
+}
+
+function onOpenOrderIssued(m) {
+  log("=========================> open order issued!");
+  return new Promise((resolve, reject) => {Pages[ID_ORDER].resolve = resolve;});
+}
+
 function onQueryResult(m) {
   log("=========================> query result!");
-  return sndMsg(ID_JD, "editMark", orderID);
+  return sndMsg(ID_JD, "openOrder", orderID);
+  //return sndMsg(ID_JD, "editMark", orderID);
 }
 
 function onQeuryIssued(m) {
@@ -107,6 +124,8 @@ function handleOrders() {
   .then(onDetailClosed)
   .then(onQeuryIssued)
   .then(onQueryResult)
+  .then(onOpenOrderIssued)
+  .then(onOrderOpened)
   .then(onEditMark)
   .then(onSetMark)
   .then(onMarkDoneIssued)
@@ -126,7 +145,8 @@ function onTotalReceived(m){
 
 function onFakeOrderReload() {
   log("=========================> FakeOrder reloaded!");
-  return sndMsg(ID_FAKE, "queryTotal");
+  //return sndMsg(ID_FAKE, "queryTotal");
+  return createDelayPromise(1000);
 }
 
 function onFakeOrderFound(tabs) {
@@ -162,6 +182,30 @@ function onError(error) {
 
 function startProcessing() {
   log("------------ start processing");
+
+  /* TODO : for test only */
+  browser.tabs.query({currentWindow: true, url: [
+    "https://order.shop.jd.com/order/sopUp_waitOutList.action*"
+  ]})
+  .then(onJDFound)
+  .then(onJDReload)
+  .then(onFakeOrderFound)
+  .then(onFakeOrderReload)
+  .then(onDetailClosed)
+  .then(onQeuryIssued)
+  .then(onQueryResult)
+  .then(onOpenOrderIssued)
+  .then(onOrderOpened)
+  .then(onShowMobile)
+  .then(onEditMark)
+  .then(onSetMark)
+  .then(onMarkDoneIssued)
+  .then(onMarkDone)
+  .then(onSureDoneIssued)
+  .then(onSureDone)
+  .catch(onOrderError);
+  return;
+
   browser.tabs.query({currentWindow: true, url: [
     "https://order.shop.jd.com/order/sopUp_waitOutList.action*"
   ]})
@@ -179,7 +223,8 @@ function startProcessing() {
 var Pages = [
   {name:"FakeOrder", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd\\\?ss%5Bstatus%5D=2&ss%5Bstart%5D=.*$")},
   {name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$")},
-  {name:"JD", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_waitOutList.action.*$")}
+  {name:"JD", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_waitOutList.action.*$")},
+  {name:"ORDER", regexp: new RegExp("^https:\/\/neworder.shop.jd.com\/order\/orderDetail\\\?orderId=.*$")}
 ];
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
