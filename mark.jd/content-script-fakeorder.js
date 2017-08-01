@@ -81,7 +81,7 @@ function markDone1(i) {
 function sureDone1() {
   var btn = $("button:contains('确认返款')")[0];
   if (btn != undefined) {
-    btn.click();
+    new Promise((resolve)=>{resolve("ok")}).then(()=>{btn.click()});
     return Promise.resolve("ok");
   } else {
     return Promise.reject(new Error("no sure done button"));

@@ -15,6 +15,7 @@ var progressing = 0;
 var d = new Date();
 const taskDelay = 5*60*1000;
 var lastDone = d.getTime() - taskDelay;
+var delayResolve = undefined;
 
 function setProgressStatus(v)
 {
@@ -28,13 +29,31 @@ function setProgressStatus(v)
   }
 }
 
+function onOrderError(error) {
+  console.log(`Error: ${error}`);
+  cur++;
+  handleOrders();
+}
+
 function onSureDone(m) {
   log("=========================> sure done!");
+  total--;
+  handleOrders();
+}
+
+function onSureDoneIssued(m) {
+  log("=========================> sure done issued!");
+  return new Promise((resolve, reject) => {Pages[ID_FAKE].resolve = resolve;});
 }
 
 function onMarkDone(m) {
   log("=========================> mark done!");
   return sndMsg(Pages[ID_FAKE].tabId, "sureDone");
+}
+
+function onMarkDoneIssued(m) {
+  log("=========================> mark done issued!");
+  return new Promise((resolve, reject) => {delayResolve = resolve;});
 }
 
 function onSetMark(m) {
@@ -80,6 +99,12 @@ function onOpeningDetail() {
 }
 
 function handleOrders() {
+  if (cur >= total) {
+    setProgressStatus(0);
+    return;
+  }
+
+  log(`>>>>>>>>>>>>>>>>>>>>>>>>>>>>  handling: ${cur}/${total}`);
   sndMsg(Pages[ID_FAKE].tabId, "openDetail", cur)
   .then(onOpeningDetail)
   .then(onDetailLoad)
@@ -89,9 +114,11 @@ function handleOrders() {
   .then(onQueryResult)
   .then(onEditMark)
   .then(onSetMark)
+  .then(onMarkDoneIssued)
   .then(onMarkDone)
+  .then(onSureDoneIssued)
   .then(onSureDone)
-  .catch(onError);
+  .catch(onOrderError);
 }
 
 function onTotalReceived(m){
@@ -344,6 +371,11 @@ function onAction(a) {
 
 function handleAlarm(alarmInfo) {
 //  console.log("on alarm: " + alarmInfo.name);
+
+  if (delayResolve) {
+    delayResolve("delayed");
+    delayResolve = undefined;
+  }
 
   if (nxt.action != "") {
     onAction(nxt);
