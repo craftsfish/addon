@@ -7,7 +7,7 @@ const taskDelay = 5*60*1000;
 
 var total = -1;
 var cur = -1;
-var orderID = "59868468133";
+var orderID = "";
 var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
 
 function createDelayPromise(timeout) {
@@ -188,7 +188,6 @@ function handleOrders() {
   .then(onOutComplete)
   .then(onOutOrder)
   .then(onOutOrderComplete)
-  .then(onBack2JDIssued)
   .then(onBack2JDIssued)
   .then(onBack2JD)
   .then(onMarkDoneIssued)
