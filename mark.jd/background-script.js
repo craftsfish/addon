@@ -46,20 +46,19 @@ function onMarkDoneIssued(m) {
   return createDelayPromise(5*1000);
 }
 
-function onSetMark(m) {
-  log("=========================> set mark complete!");
+function onBack2JD() {
+  log("=========================> back 2 JD complete!");
   return sndMsg(ID_FAKE, "markDone");
 }
 
-function onEditMark(m) {
-  log("=========================> edit mark pop launched!");
-  return sndMsg(ID_JD, "setMark");
+function onBack2JDIssued() {
+  log("=========================> back to JD issued!");
+  return new Promise((resolve, reject) => {Pages[ID_JD].resolve = resolve;});
 }
 
 function onOutOrderComplete() {
   log("=========================> out order complete!");
-  window.history.back();
-  throw new Error("xxxxxxxxxxxxxxxxxxxxxxxxxxx");
+  return sndMsg(ID_OUT, "back");
 }
 
 function onOutOrder() {
@@ -113,10 +112,19 @@ function onOpenOrderIssued(m) {
   return new Promise((resolve, reject) => {Pages[ID_ORDER].resolve = resolve;});
 }
 
+function onSetMark(m) {
+  log("=========================> set mark complete!");
+  return sndMsg(ID_JD, "openOrder", orderID);
+}
+
+function onEditMark(m) {
+  log("=========================> edit mark pop launched!");
+  return sndMsg(ID_JD, "setMark");
+}
+
 function onQueryResult(m) {
   log("=========================> query result!");
-  return sndMsg(ID_JD, "openOrder", orderID);
-  //return sndMsg(ID_JD, "editMark", orderID);
+  return sndMsg(ID_JD, "editMark", orderID);
 }
 
 function onQeuryIssued(m) {
@@ -167,6 +175,8 @@ function handleOrders() {
   .then(onDetailClosed)
   .then(onQeuryIssued)
   .then(onQueryResult)
+  .then(onEditMark)
+  .then(onSetMark)
   .then(onOpenOrderIssued)
   .then(onOrderOpened)
   .then(onShowMobile)
@@ -178,8 +188,9 @@ function handleOrders() {
   .then(onOutComplete)
   .then(onOutOrder)
   .then(onOutOrderComplete)
-  .then(onEditMark)
-  .then(onSetMark)
+  .then(onBack2JDIssued)
+  .then(onBack2JDIssued)
+  .then(onBack2JD)
   .then(onMarkDoneIssued)
   .then(onMarkDone)
   .then(onSureDoneIssued)
@@ -197,8 +208,7 @@ function onTotalReceived(m){
 
 function onFakeOrderReload() {
   log("=========================> FakeOrder reloaded!");
-  //return sndMsg(ID_FAKE, "queryTotal");
-  return createDelayPromise(1000);
+  return sndMsg(ID_FAKE, "queryTotal");
 }
 
 function onFakeOrderFound(tabs) {
@@ -234,37 +244,6 @@ function onError(error) {
 
 function startProcessing() {
   log("------------ start processing");
-
-  /* TODO : for test only */
-  browser.tabs.query({currentWindow: true, url: [
-    "https://order.shop.jd.com/order/sopUp_waitOutList.action*"
-  ]})
-  .then(onJDFound)
-  .then(onJDReload)
-  .then(onFakeOrderFound)
-  .then(onFakeOrderReload)
-  .then(onDetailClosed)
-  .then(onQeuryIssued)
-  .then(onQueryResult)
-  .then(onOpenOrderIssued)
-  .then(onOrderOpened)
-  .then(onShowMobile)
-  .then(onMobileShowed)
-  .then(onGetAddress)
-  .then(onOrderCloseDelayed)
-  .then(onOrderClose)
-  .then(onOutIssued)
-  .then(onOutComplete)
-  .then(onOutOrder)
-  .then(onOutOrderComplete)
-  .then(onEditMark)
-  .then(onSetMark)
-  .then(onMarkDoneIssued)
-  .then(onMarkDone)
-  .then(onSureDoneIssued)
-  .then(onSureDone)
-  .catch(onOrderError);
-  return;
 
   browser.tabs.query({currentWindow: true, url: [
     "https://order.shop.jd.com/order/sopUp_waitOutList.action*"
