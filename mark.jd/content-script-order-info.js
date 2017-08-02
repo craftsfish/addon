@@ -21,7 +21,7 @@ function getAddress()
   var m = $("#mobile")[0].innerHTML;
   var n = $("#mobile")[0].parentNode.parentNode.childNodes[0].childNodes[3].innerHTML;
   var a = $("#mobile")[0].parentNode.parentNode.childNodes[2].childNodes[3].innerHTML;
-  return Promise.resolve("收货人:" + n + "   地址:" + a + " 手机号:" + m);
+  return Promise.resolve(n + "," + m + "," + a + ",000000");
 }
 
 function onMsg(m)

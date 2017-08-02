@@ -3,12 +3,15 @@ const ID_DETAIL = 1;
 const ID_JD = 2;
 const ID_ORDER = 3;
 const ID_OUT = 4;
-const ID_EMPTY = 5;
+const ID_EXPRESS = 5;
+const ID_POSTID = 6;
 const taskDelay = 5*60*1000;
 
 var total = -1;
 var cur = -1;
 var orderID = "";
+var address = "";
+var postID = "";
 var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
 
 function createDelayPromise(timeout) {
@@ -78,10 +81,32 @@ function onOutIssued() {
   return new Promise((resolve, reject) => {Pages[ID_OUT].resolve = resolve;});
 }
 
+function onGetPostIDComplete() {
+  log("=========================> get post id complete!");
+  throw new Error("Currently, do not mark done, it's ok for test!");
+  return new Promise((resolve, reject) => {Pages[ID_OUT].resolve = resolve;});
+}
+
+function onGetPostIDIssued(m) {
+  log("=========================> get post id issued!");
+  postID = m;
+  log(m);
+  return new Promise((resolve, reject) => {Pages[ID_EXPRESS].resolve = resolve;});
+}
+
+function onExpressIDLoaded() {
+  log("=========================> express id loaded!");
+  return sndMsg(ID_POSTID, "getPostID");
+}
+
+function onGetExpressIDIssued() {
+  log("=========================> get express is issued!");
+  return new Promise((resolve, reject) => {Pages[ID_POSTID].resolve = resolve;});
+}
+
 function onOrderClose() {
   log("=========================> order close!");
-  throw new Error("Currently, do not start real out, it's ok for test!");
-  return sndMsg(ID_JD, "out");
+  return sndMsg(ID_EXPRESS, "getExpressID", address);
 }
 
 function onOrderCloseDelayed() {
@@ -91,7 +116,7 @@ function onOrderCloseDelayed() {
 
 function onGetAddress(m) {
   log("=========================> get address!");
-  log(m);
+  address = m;
   return createDelayPromise(2*1000);
 }
 
@@ -187,6 +212,10 @@ function handleOrders() {
   .then(onGetAddress)
   .then(onOrderCloseDelayed)
   .then(onOrderClose)
+  .then(onGetExpressIDIssued)
+  .then(onExpressIDLoaded)
+  .then(onGetPostIDIssued)
+  .then(onGetPostIDComplete)
   .then(onOutIssued)
   .then(onOutComplete)
   .then(onOutOrder)
@@ -216,7 +245,7 @@ function onEmptyReload() {
 function onEmptyFound(tabs) {
   if (tabs.length == 1) {
     browser.tabs.reload(tabs[0].id);
-    return new Promise((resolve, reject) => {Pages[ID_EMPTY].resolve = resolve;});
+    return new Promise((resolve, reject) => {Pages[ID_EXPRESS].resolve = resolve;});
   } else {
     throw new Error('failed to found Empty tab');
   }
@@ -285,7 +314,8 @@ var Pages = [
   {name:"JD", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_waitOutList.action.*$")},
   {name:"ORDER", regexp: new RegExp("^https:\/\/neworder.shop.jd.com\/order\/orderDetail\\\?orderId=.*$")},
   {name:"OUT", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_oneOut.action\\\?.*$")},
-  {name:"Empty", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=checkout&id=52.*$")}
+  {name:"Express", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=checkout&id=52.*$")},
+  {name:"POSTID", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=orderck.*$")}
 ];
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {

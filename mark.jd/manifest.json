@@ -31,6 +31,14 @@
       "js": ["jquery/jquery-1.4.min.js"]
     },
     {
+      "matches": ["http://www.pianyilo.com/flow.php?step=checkout&id=52*"],
+      "js": ["content-script-express.js"]
+    },
+    {
+      "matches": ["http://www.pianyilo.com/flow.php?step=orderck*"],
+      "js": ["content-script-postid.js"]
+    },
+    {
       "matches": ["https://order.shop.jd.com/order/sopUp_oneOut.action*"],
       "js": ["content-script-out.js"]
     },
