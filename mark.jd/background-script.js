@@ -53,8 +53,7 @@ function onMarkDoneIssued(m) {
 
 function onBack2JD() {
   log("=========================> back 2 JD complete!");
-  throw new Error("Currently, do not mark done, it's ok for test!");
-  return sndMsg(ID_FAKE, "markDone");
+  return sndMsg(ID_FAKE, "markDone", {cur: cur, fakeID: fakeID});
 }
 
 function onBack2JDIssued() {
@@ -185,7 +184,7 @@ function onDetailLoad() {
 function onOpeningDetail(m) {
   log("=========================> Detail is opening!");
   log(m);
-  fakeID = m;
+  fakeID = m[0];
   return new Promise((resolve, reject) => {Pages[ID_DETAIL].resolve = resolve;});
 }
 

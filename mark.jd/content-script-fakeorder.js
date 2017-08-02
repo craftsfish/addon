@@ -19,9 +19,13 @@ function queryTotal()
   }
 }
 
-function markDone(i) {
-  $("a:contains('确认')")[0].click()
-  return Promise.resolve("ok");
+function markDone(v) {
+  var d = $("a.xq")[v.cur].attributes[1].value.match(/\d+/);
+  console.log(`==============makr done with first item ${d} and require item ${v.fakeID}`);
+  if (d == v.fakeID) {
+    $("a:contains('确认')")[v.cur].click()
+    return Promise.resolve("ok");
+  }
 }
 
 function sureDone() {
@@ -42,7 +46,7 @@ function onMsg(m)
   } else if (m.action == "openDetail") {
     return openDetail(m.data);
   } else if (m.action == "markDone") {
-    return markDone(i);
+    return markDone(m.data);
   } else if (m.action == "sureDone") {
     return sureDone();
   }
