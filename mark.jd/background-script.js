@@ -9,6 +9,7 @@ const taskDelay = 5*60*1000;
 
 var total = -1;
 var cur = -1;
+var fakeID = "";
 var orderID = "";
 var address = "";
 var postID = "";
@@ -68,12 +69,12 @@ function onOutOrderComplete() {
 
 function onOutOrder() {
   log("=========================> out order issued!");
-  return createDelayPromise(2*1000);
+  return createDelayPromise(5*1000);
 }
 
 function onOutComplete() {
   log("=========================> out complete!");
-  return sndMsg(ID_OUT, "outOrder");
+  return sndMsg(ID_OUT, "outOrder", postID);
 }
 
 function onOutIssued() {
@@ -83,8 +84,7 @@ function onOutIssued() {
 
 function onGetPostIDComplete() {
   log("=========================> get post id complete!");
-  throw new Error("Currently, do not mark done, it's ok for test!");
-  return new Promise((resolve, reject) => {Pages[ID_OUT].resolve = resolve;});
+  return sndMsg(ID_JD, "out");
 }
 
 function onGetPostIDIssued(m) {
@@ -182,8 +182,10 @@ function onDetailLoad() {
   return sndMsg(ID_DETAIL, "getOrderID");
 }
 
-function onOpeningDetail() {
+function onOpeningDetail(m) {
   log("=========================> Detail is opening!");
+  log(m);
+  fakeID = m;
   return new Promise((resolve, reject) => {Pages[ID_DETAIL].resolve = resolve;});
 }
 

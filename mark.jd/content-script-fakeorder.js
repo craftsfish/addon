@@ -2,7 +2,7 @@ function openDetail(i) {
   var d = $("a.xq")[i];
   if (d) {
     d.click();
-    return Promise.resolve("opening");
+    return Promise.resolve(d.attributes[1].value.match(/\d+/));
   } else {
     return Promise.reject(new Error("no detail item"));
   }
@@ -42,7 +42,7 @@ function onMsg(m)
   } else if (m.action == "openDetail") {
     return openDetail(m.data);
   } else if (m.action == "markDone") {
-    return markDone();
+    return markDone(i);
   } else if (m.action == "sureDone") {
     return sureDone();
   }

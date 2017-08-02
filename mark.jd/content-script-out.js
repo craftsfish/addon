@@ -1,9 +1,8 @@
-function outOrder()
+function outOrder(postID)
 {
   $("#custom")[0].value = "2465";
-  $("#tempField")[0].value = "";
+  $("#tempField")[0].value = postID;
   var btn = $("#out")[0];
-  throw new Error("xxxxxxxxxxxx   NO express id");
   new Promise((resolve)=>{resolve("ok")}).then(()=>{btn.click();});
   return Promise.resolve("ok");
 }
@@ -17,7 +16,7 @@ function back()
 function onMsg(m)
 {
   if (m.action == "outOrder") {
-    return outOrder();
+    return outOrder(m.data);
   } else if (m.action == "back") {
     return back();
   }
