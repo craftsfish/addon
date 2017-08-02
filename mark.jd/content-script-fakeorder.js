@@ -2,7 +2,7 @@ function openDetail(i) {
   var d = $("a.xq")[i];
   if (d) {
     d.click();
-    return Promise.resolve(d.attributes[1].value.match(/\d+/));
+    return Promise.resolve(d.attributes[1].value.match(/\d+/)[0]);
   } else {
     return Promise.reject(new Error("no detail item"));
   }
@@ -20,7 +20,7 @@ function queryTotal()
 }
 
 function markDone(v) {
-  var d = $("a.xq")[v.cur].attributes[1].value.match(/\d+/);
+  var d = $("a.xq")[v.cur].attributes[1].value.match(/\d+/)[0];
   console.log(`==============makr done with first item ${d} and require item ${v.fakeID}`);
   if (d == v.fakeID) {
     $("a:contains('确认')")[v.cur].click()

@@ -25,177 +25,175 @@ createDelayPromise(0)
 .then(startProcessing);
 
 function onOrderError(error) {
-  console.log(`Error: ${error}`);
+  err(`Error: ${error}`);
   cur++;
   handleOrders();
 }
 
 function onSureDone(m) {
-  log("=========================> sure done!");
+  log("Confirm fakeorder done completed!");
   total--;
   handleOrders();
 }
 
 function onSureDoneIssued(m) {
-  log("=========================> sure done issued!");
+  log("Confirm fakeorder done issued!");
   return new Promise((resolve, reject) => {Pages[ID_FAKE].resolve = resolve;});
 }
 
 function onMarkDone(m) {
-  log("=========================> mark done!");
+  log("Mark fakeorder done completed!");
   return sndMsg(ID_FAKE, "sureDone");
 }
 
 function onMarkDoneIssued(m) {
-  log("=========================> mark done issued!");
+  log("Mark fakeorder done issued!");
   return createDelayPromise(5*1000);
 }
 
 function onBack2JD() {
-  log("=========================> back 2 JD complete!");
+  log("Back to JDOverview completed!");
   return sndMsg(ID_FAKE, "markDone", {cur: cur, fakeID: fakeID});
 }
 
 function onBack2JDIssued() {
-  log("=========================> back to JD issued!");
+  log("Back to JDOverview issued!");
   return new Promise((resolve, reject) => {Pages[ID_JD].resolve = resolve;});
 }
 
 function onOutOrderComplete() {
-  log("=========================> out order complete!");
+  log("Out order request complete!");
   return sndMsg(ID_OUT, "back");
 }
 
 function onOutOrder() {
-  log("=========================> out order issued!");
+  log("Out order request issued!");
   return createDelayPromise(5*1000);
 }
 
 function onOutComplete() {
-  log("=========================> out complete!");
+  log("JDOutput loaded!");
   return sndMsg(ID_OUT, "outOrder", postID);
 }
 
 function onOutIssued() {
-  log("=========================> out issued!");
+  log("JDOutput load request issued!");
   return new Promise((resolve, reject) => {Pages[ID_OUT].resolve = resolve;});
 }
 
 function onGetPostIDComplete() {
-  log("=========================> get post id complete!");
+  log("Get express id complete!");
   return sndMsg(ID_JD, "out");
 }
 
 function onGetPostIDIssued(m) {
-  log("=========================> get post id issued!");
+  log("Get express id issued!");
   postID = m;
   log(m);
   return new Promise((resolve, reject) => {Pages[ID_EXPRESS].resolve = resolve;});
 }
 
 function onExpressIDLoaded() {
-  log("=========================> express id loaded!");
+  log("ExpressResult loaded!");
   return sndMsg(ID_POSTID, "getPostID");
 }
 
 function onGetExpressIDIssued() {
-  log("=========================> get express is issued!");
+  log("Compose express complete!");
   return new Promise((resolve, reject) => {Pages[ID_POSTID].resolve = resolve;});
 }
 
 function onOrderClose() {
-  log("=========================> order close!");
+  log("JDDetail closed!");
   return sndMsg(ID_EXPRESS, "getExpressID", address);
 }
 
 function onOrderCloseDelayed() {
-  log("=========================> order closed command fired!");
+  log("Close JDDetail issued!");
   return browser.tabs.remove(Pages[ID_ORDER].tabId);
 }
 
 function onGetAddress(m) {
-  log("=========================> get address!");
+  log(`Get address complete ${m}`);
   address = m;
-  return createDelayPromise(2*1000);
+  return createDelayPromise(1*1000);
 }
 
 function onMobileShowed() {
-  log("=========================> mobile showed!");
+  log("Show mobile number complete !");
   return sndMsg(ID_ORDER, "getAddress");
 }
 
 function onShowMobile() {
-  log("=========================> show launched!");
+  log("Show mobile number issued!");
   return createDelayPromise(2*1000);
 }
 
 function onOrderOpened(m) {
-  log("=========================> order opened!");
+  log("JDDetail opened!");
   return sndMsg(ID_ORDER, "showMobile");
 }
 
 function onOpenOrderIssued(m) {
-  log("=========================> open order issued!");
+  log("Open JDDetail issued!");
   return new Promise((resolve, reject) => {Pages[ID_ORDER].resolve = resolve;});
 }
 
 function onSetMark(m) {
-  log("=========================> set mark complete!");
+  log("Mark updated!");
   return sndMsg(ID_JD, "openOrder", orderID);
 }
 
 function onEditMark(m) {
-  log("=========================> edit mark pop launched!");
+  log("Edit mark pop launched!");
   return sndMsg(ID_JD, "setMark");
 }
 
 function onQueryResult(m) {
-  log("=========================> query result!");
+  log("Query order request complete!");
   return sndMsg(ID_JD, "editMark", orderID);
 }
 
 function onQeuryIssued(m) {
-  log("=========================> query issued!");
+  log("Query order request issued!");
   return new Promise((resolve, reject) => {Pages[ID_JD].resolve = resolve;});
 }
 
 function onDetailClosed(m) {
-  log("=========================> detail closed!");
+  log("FakeDetail closed!");
   return sndMsg(ID_JD, "queryOrder", orderID);
 }
 
 function onDetailCloseDelayed(m) {
-  log("=========================> detail closed command fired!");
+  log("FakeDetail close request issued!");
   return browser.tabs.remove(Pages[ID_DETAIL].tabId);
 }
 
 function onOrderGet(m) {
-  log("=========================> order ID get!");
-  log(m);
+  log(`Order ID get : ${m}`);
   orderID = m;
-  return createDelayPromise(5*1000);
+  return createDelayPromise(1*1000);
 }
 
 function onDetailLoad() {
-  log("=========================> Detail is loaded!");
+  log("FakeDetail is loaded!");
   return sndMsg(ID_DETAIL, "getOrderID");
 }
 
 function onOpeningDetail(m) {
-  log("=========================> Detail is opening!");
-  log(m);
-  fakeID = m[0];
+  log(`FakeOrder ${m} is opening!`);
+  fakeID = m;
   return new Promise((resolve, reject) => {Pages[ID_DETAIL].resolve = resolve;});
 }
 
 function handleOrders() {
   if (cur >= total) {
-    log("------------ stop processing");
+    log("stop processing");
     createDelayPromise(taskDelay).then(startProcessing);
     return;
   }
 
-  log(`>>>>>>>>>>>>>>>>>>>>>>>>>>>>  handling: ${cur}/${total}`);
+  log(`handling: ${cur}/${total}`);
   sndMsg(ID_FAKE, "openDetail", cur)
   .then(onOpeningDetail)
   .then(onDetailLoad)
@@ -231,15 +229,14 @@ function handleOrders() {
 }
 
 function onTotalReceived(m){
-  log("=========================> Total received!");
-  log(m);
+  log(`Total fakeorder number received : ${m}`);
   cur = 0;
   total = m;
   handleOrders();
 }
 
 function onEmptyReload() {
-  log("=========================> Empty reloaded!");
+  log("ExpressComposer reloaded!");
   return sndMsg(ID_FAKE, "queryTotal");
 }
 
@@ -253,7 +250,7 @@ function onEmptyFound(tabs) {
 }
 
 function onFakeOrderReload() {
-  log("=========================> FakeOrder reloaded!");
+  log("FakeOverview reloaded!");
   return browser.tabs.query({currentWindow: true, url: [
     "http://www.pianyilo.com/flow.php?step=checkout&id=52"
   ]});
@@ -269,7 +266,7 @@ function onFakeOrderFound(tabs) {
 }
 
 function onJDReload() {
-  log("=========================> JD reloaded!");
+  log("JDOverview reloaded!");
   return browser.tabs.query({currentWindow: true, url: [
     "http://www.dasbu.com/seller/order/jd?ss%5Bstatus%5D=2&ss%5Bstart%5D="
   ]});
@@ -285,13 +282,13 @@ function onJDFound(tabs) {
 }
 
 function onError(error) {
-  console.log(`Error: ${error}`);
-  log("------------ stop processing");
+  err(`Error: ${error}`);
+  log("stop processing");
   createDelayPromise(taskDelay).then(startProcessing);
 }
 
 function startProcessing() {
-  log("------------ start processing");
+  log("start processing");
 
   browser.tabs.query({currentWindow: true, url: [
     "https://order.shop.jd.com/order/sopUp_waitOutList.action*"
@@ -310,13 +307,13 @@ function startProcessing() {
  * Tabs Updated Handling
  */
 var Pages = [
-  {name:"FakeOrder", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd\\\?ss%5Bstatus%5D=2&ss%5Bstart%5D=.*$")},
-  {name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$")},
-  {name:"JD", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_waitOutList.action.*$")},
-  {name:"ORDER", regexp: new RegExp("^https:\/\/neworder.shop.jd.com\/order\/orderDetail\\\?orderId=.*$")},
-  {name:"OUT", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_oneOut.action\\\?.*$")},
-  {name:"Express", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=checkout&id=52.*$")},
-  {name:"POSTID", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=orderck.*$")}
+  {name:"FakeOverview", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/jd\\\?ss%5Bstatus%5D=2&ss%5Bstart%5D=.*$")},
+  {name:"FakeDetail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$")},
+  {name:"JDOverview", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_waitOutList.action.*$")},
+  {name:"JDDetail", regexp: new RegExp("^https:\/\/neworder.shop.jd.com\/order\/orderDetail\\\?orderId=.*$")},
+  {name:"JDOutput", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_oneOut.action\\\?.*$")},
+  {name:"ExpressComposer", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=checkout&id=52.*$")},
+  {name:"ExpressResult", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=orderck.*$")}
 ];
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
@@ -363,14 +360,14 @@ function handleAlarm(alarmInfo) {
 browser.alarms.onAlarm.addListener(handleAlarm);
 
 function err(m) {
-  console.log(m);
+  console.log(`xxxxxxxxxxxxxxxxxxxx>	${m}`);
 }
 
 function log(m) {
-  console.log(m);
+  console.log(`-------------------->	${m}`);
 }
 
 function sndMsg(id, a, d) {
-  log(`----------> send message to ${Pages[id].name} : action is ${a}, data is ${d}`);
+  log(`send message to ${Pages[id].name} : action is ${a}, data is ${d}`);
   return browser.tabs.sendMessage(Pages[id].tabId, {action: a, data: d});
 }
