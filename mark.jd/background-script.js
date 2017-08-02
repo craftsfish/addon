@@ -3,6 +3,7 @@ const ID_DETAIL = 1;
 const ID_JD = 2;
 const ID_ORDER = 3;
 const ID_OUT = 4;
+const ID_EMPTY = 5;
 const taskDelay = 5*60*1000;
 
 var total = -1;
@@ -48,6 +49,7 @@ function onMarkDoneIssued(m) {
 
 function onBack2JD() {
   log("=========================> back 2 JD complete!");
+  throw new Error("Currently, do not mark done, it's ok for test!");
   return sndMsg(ID_FAKE, "markDone");
 }
 
@@ -78,6 +80,7 @@ function onOutIssued() {
 
 function onOrderClose() {
   log("=========================> order close!");
+  throw new Error("Currently, do not start real out, it's ok for test!");
   return sndMsg(ID_JD, "out");
 }
 
@@ -205,9 +208,25 @@ function onTotalReceived(m){
   handleOrders();
 }
 
+function onEmptyReload() {
+  log("=========================> Empty reloaded!");
+  return sndMsg(ID_FAKE, "queryTotal");
+}
+
+function onEmptyFound(tabs) {
+  if (tabs.length == 1) {
+    browser.tabs.reload(tabs[0].id);
+    return new Promise((resolve, reject) => {Pages[ID_EMPTY].resolve = resolve;});
+  } else {
+    throw new Error('failed to found Empty tab');
+  }
+}
+
 function onFakeOrderReload() {
   log("=========================> FakeOrder reloaded!");
-  return sndMsg(ID_FAKE, "queryTotal");
+  return browser.tabs.query({currentWindow: true, url: [
+    "http://www.pianyilo.com/flow.php?step=checkout&id=52"
+  ]});
 }
 
 function onFakeOrderFound(tabs) {
@@ -251,6 +270,8 @@ function startProcessing() {
   .then(onJDReload)
   .then(onFakeOrderFound)
   .then(onFakeOrderReload)
+  .then(onEmptyFound)
+  .then(onEmptyReload)
   .then(onTotalReceived)
   .catch(onError);
 }
@@ -263,7 +284,8 @@ var Pages = [
   {name:"Detail", regexp: new RegExp("^http:\/\/www.dasbu.com\/seller\/order\/detail.*$")},
   {name:"JD", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_waitOutList.action.*$")},
   {name:"ORDER", regexp: new RegExp("^https:\/\/neworder.shop.jd.com\/order\/orderDetail\\\?orderId=.*$")},
-  {name:"OUT", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_oneOut.action\\\?.*$")}
+  {name:"OUT", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_oneOut.action\\\?.*$")},
+  {name:"Empty", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=checkout&id=52.*$")}
 ];
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
