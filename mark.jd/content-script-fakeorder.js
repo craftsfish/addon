@@ -21,7 +21,7 @@ function queryTotal()
 
 function markDone(v) {
   var d = $("a.xq")[v.cur].attributes[1].value.match(/\d+/)[0];
-  console.log(`==============makr done with first item ${d} and require item ${v.fakeID}`);
+  console.log(`==============makr done with ${v.cur} item, fakeid is : ${d} and require fakeid is: ${v.fakeID}`);
   if (d == v.fakeID) {
     $("a:contains('确认')")[v.cur].click()
     return Promise.resolve("ok");
