@@ -13,6 +13,7 @@ var fakeID = "";
 var orderID = "";
 var address = "";
 var postID = "";
+var active = 0;
 var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
 
 function createDelayPromise(timeout) {
@@ -20,10 +21,18 @@ function createDelayPromise(timeout) {
   return new Promise((resolve, reject)=>{delayPromise.resolve = resolve; delayPromise.reject = reject});
 }
 
-/* fire progress immediately */
-createDelayPromise(0)
-.then(startProcessing);
+/* browser action handling */
+function handleClick() {
+  if (active == 0) {
+    startProcessing();
+    active = 1;
+  } else {
+    active = 0;
+  }
+}
+browser.browserAction.onClicked.addListener(handleClick);
 
+/* order handling */
 function onOrderError(error) {
   err(`Error: ${error}`);
   cur++;
@@ -187,7 +196,7 @@ function onOpeningDetail(m) {
 }
 
 function handleOrders() {
-  if (cur >= total) {
+  if ((cur >= total) || (active == 0)) {
     log("stop processing");
     createDelayPromise(taskDelay).then(startProcessing);
     return;
@@ -228,6 +237,7 @@ function handleOrders() {
   .catch(onOrderError);
 }
 
+/* overall information handling */
 function onTotalReceived(m){
   log(`Total fakeorder number received : ${m}`);
   cur = 0;
@@ -290,6 +300,8 @@ function onError(error) {
 function startProcessing() {
   log("start processing");
 
+  cur = 0;
+  total = 0;
   browser.tabs.query({currentWindow: true, url: [
     "https://order.shop.jd.com/order/sopUp_waitOutList.action*"
   ]})
@@ -359,6 +371,7 @@ function handleAlarm(alarmInfo) {
 
 browser.alarms.onAlarm.addListener(handleAlarm);
 
+/* log function */
 function err(m) {
   console.log(`xxxxxxxxxxxxxxxxxxxx>	${m}`);
 }
@@ -367,6 +380,7 @@ function log(m) {
   console.log(`-------------------->	${m}`);
 }
 
+/* interaction with content scripts */
 function sndMsg(id, a, d) {
   log(`send message to ${Pages[id].name} : action is ${a}, data is ${d}`);
   return browser.tabs.sendMessage(Pages[id].tabId, {action: a, data: d});
