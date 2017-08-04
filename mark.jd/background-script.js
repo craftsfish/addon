@@ -373,11 +373,13 @@ browser.alarms.onAlarm.addListener(handleAlarm);
 
 /* log function */
 function err(m) {
-  console.log(`xxxxxxxxxxxxxxxxxxxx>	${m}`);
+  var t = new Date().toTimeString();
+  console.log(`[${t}]xxxxxxxxxxxx>	${m}`);
 }
 
 function log(m) {
-  console.log(`-------------------->	${m}`);
+  var t = new Date().toTimeString();
+  console.log(`[${t}]---->	${m}`);
 }
 
 /* interaction with content scripts */
