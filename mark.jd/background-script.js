@@ -255,7 +255,9 @@ function onEmptyFound(tabs) {
     browser.tabs.reload(tabs[0].id);
     return new Promise((resolve, reject) => {Pages[ID_EXPRESS].resolve = resolve;});
   } else {
-    throw new Error('failed to found Empty tab');
+    log("Create new instance of ExpressComposer");
+    browser.tabs.create({url:"http://www.pianyilo.com/flow.php?step=checkout&id=52"});
+    return new Promise((resolve, reject) => {Pages[ID_EXPRESS].resolve = resolve;});
   }
 }
 
@@ -271,7 +273,9 @@ function onFakeOrderFound(tabs) {
     browser.tabs.reload(tabs[0].id);
     return new Promise((resolve, reject) => {Pages[ID_FAKE].resolve = resolve;});
   } else {
-    throw new Error('failed to found FakeOrder tab');
+    log("Create new instance of FakeOverview");
+    browser.tabs.create({url:"http://www.dasbu.com/seller/order/jd?ss%5Bstatus%5D=2&ss%5Bstart%5D="});
+    return new Promise((resolve, reject) => {Pages[ID_FAKE].resolve = resolve;});
   }
 }
 
@@ -287,7 +291,9 @@ function onJDFound(tabs) {
     browser.tabs.reload(tabs[0].id);
     return new Promise((resolve, reject) => {Pages[ID_JD].resolve = resolve;});
   } else {
-    throw new Error('failed to found JD tab');
+    log("Create new instance of JDOverview");
+    browser.tabs.create({url:"https://order.shop.jd.com/order/sopUp_waitOutList.action"});
+    return new Promise((resolve, reject) => {Pages[ID_JD].resolve = resolve;});
   }
 }
 
