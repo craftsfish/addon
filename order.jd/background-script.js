@@ -1,12 +1,5 @@
-log("OrderSync is running");
+log("OrderSync background is running");
 
-/* log function */
-function err(m) {
-  var t = new Date().toTimeString();
-  console.log(`[${t}]xxxxxxxxxxxx>	${m}`);
-}
-
-function log(m) {
-  var t = new Date().toTimeString();
-  console.log(`[${t}]---->	${m}`);
-}
+var t = new Date();
+log(t.toDateString());
+log(t.toTimeString());

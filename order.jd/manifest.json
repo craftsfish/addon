@@ -17,6 +17,17 @@
   ],
 
   "background": {
-    "scripts": ["background-script.js"]
-  }
+    "scripts": ["common.js", "background-script.js"]
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["jquery/jquery-1.4.min.js", "common.js"]
+    },
+    {
+      "matches": ["https://order.shop.jd.com/order/sSopUp_allList.action*"],
+      "js": ["content-script-jd.js"]
+    }
+  ]
 }
