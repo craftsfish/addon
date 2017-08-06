@@ -336,8 +336,9 @@ var Pages = [
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   if (changeInfo.status == "complete") { /* loading complete */
-//    console.log(changeInfo);
-//    console.log(tabInfo);
+    log("========> onTabsUpdated complete");
+    console.log(changeInfo);
+    console.log(tabInfo);
 
     var i = 0;
     for (i=0; i<Pages.length; i++) {
@@ -358,8 +359,8 @@ browser.tabs.onUpdated.addListener(onTabsUpdated);
 /*
  * periodic task
  */
-const delayInMinutes = 0.1;
-const periodInMinutes = 0.1;
+const delayInMinutes = 0;
+const periodInMinutes = 0.5;
 browser.alarms.create("my-periodic-alarm", {
   delayInMinutes,
   periodInMinutes
