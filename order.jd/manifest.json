@@ -1,0 +1,22 @@
+{
+  "description": "Automatically sync order from JD to postgre database.",
+  "manifest_version": 2,
+  "name": "OrderSync",
+  "version": "1.0",
+  "icons": {
+    "48": "icons/beasts-48.png"
+  },
+
+  "permissions": [
+    "<all_urls>",
+    "activeTab",
+    "tabs",
+    "webNavigation",
+    "webRequest",
+    "alarms"
+  ],
+
+  "background": {
+    "scripts": ["background-script.js"]
+  }
+}
