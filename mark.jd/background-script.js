@@ -5,6 +5,7 @@ const ID_ORDER = 3;
 const ID_OUT = 4;
 const ID_EXPRESS = 5;
 const ID_POSTID = 6;
+const ID_JDLOGIN = 7;
 const taskDelay = 5*60*1000;
 
 var total = -1;
@@ -331,7 +332,8 @@ var Pages = [
   {name:"JDDetail", regexp: new RegExp("^https:\/\/neworder.shop.jd.com\/order\/orderDetail\\\?orderId=.*$")},
   {name:"JDOutput", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_oneOut.action\\\?.*$")},
   {name:"ExpressComposer", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=checkout&id=52.*$")},
-  {name:"ExpressResult", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=orderck.*$")}
+  {name:"ExpressResult", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=orderck.*$")},
+  {name:"JDLogin", regexp: new RegExp("^https:\/\/passport.shop.jd.com\/login\/index.action\\\?.*$")}
 ];
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {

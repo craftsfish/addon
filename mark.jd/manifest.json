@@ -51,6 +51,10 @@
       "js": ["content-script-jd.js"]
     },
     {
+      "matches": ["https://passport.shop.jd.com/login/index.action?*"],
+      "js": ["content-script-jd-login.js"]
+    },
+    {
       "matches": ["http://www.dasbu.com/seller/order/detail?id=*"],
       "js": ["content-script-detail.js"]
     },
