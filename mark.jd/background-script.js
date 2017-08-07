@@ -322,6 +322,12 @@ function startProcessing() {
   .catch(onError);
 }
 
+function jdLogin() {
+  sndMsg(ID_JDLOGIN, "composeLogin")
+  .then((m) => {log(m);})
+  .catch(onError);
+}
+
 /*
  * Tabs Updated Handling
  */
@@ -350,6 +356,11 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
         if (Pages[i].resolve) {
           Pages[i].resolve("ok");
           Pages[i].resolve = undefined;;
+        }
+
+        if (i == ID_JDLOGIN) {
+          log("start login");
+          jdLogin();
         }
       }
     }
