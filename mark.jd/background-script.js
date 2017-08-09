@@ -199,6 +199,7 @@ function onOpeningDetail(m) {
 function handleOrders() {
   if ((cur >= total) || (active == 0)) {
     log("stop processing");
+    port.postMessage("ping");
     createDelayPromise(taskDelay).then(startProcessing);
     return;
   }
@@ -301,6 +302,7 @@ function onJDFound(tabs) {
 function onError(error) {
   err(`Error: ${error}`);
   log("stop processing");
+  port.postMessage("ping");
   createDelayPromise(taskDelay).then(startProcessing);
 }
 
@@ -373,7 +375,7 @@ browser.tabs.onUpdated.addListener(onTabsUpdated);
  * periodic task
  */
 const delayInMinutes = 0;
-const periodInMinutes = 0.5;
+const periodInMinutes = 0.05;
 browser.alarms.create("my-periodic-alarm", {
   delayInMinutes,
   periodInMinutes
@@ -419,6 +421,3 @@ Listen for messages from the app.
 port.onMessage.addListener((response) => {
   console.log("Received: " + response);
 });
-
-console.log("Sending:  ping");
-port.postMessage("ping");

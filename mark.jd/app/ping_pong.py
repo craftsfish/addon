@@ -1,8 +1,36 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 import sys
 import json
 import struct
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
+
+def sendmail():
+    mail_host="smtp.163.com"
+    mail_user="craftsfish@163.com" 
+    mail_pass="xxxxxxxxx"
+
+
+    sender = 'craftsfish@163.com'
+    receivers = ['craftsfish@163.com']
+
+    message = MIMEText('ok', 'plain', 'utf-8')
+    message['From'] = Header("lcj", 'utf-8')
+    message['To'] =  Header("lcj", 'utf-8')
+
+    subject = 'heartbeat'
+    message['Subject'] = Header(subject, 'utf-8')
+
+    try:
+        smtpObj = smtplib.SMTP_SSL()
+        smtpObj.connect(mail_host, 465)
+        smtpObj.login(mail_user,mail_pass)
+        smtpObj.sendmail(sender, receivers, message.as_string())
+        print "ok"
+    except smtplib.SMTPException:
+        print "Error: failed"
 
 try:
     # Python 3.x version
@@ -60,3 +88,4 @@ except AttributeError:
         receivedMessage = getMessage()
         if receivedMessage == "ping":
             sendMessage(encodeMessage("pong2"))
+            sendmail()
