@@ -1,3 +1,2 @@
 @echo off
-
-call python C:\path\to\ping_pong.py
+call python F:\lcj\addon-master\mark.jd\app\ping_pong.py
