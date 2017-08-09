@@ -16,18 +16,18 @@ def sendmail():
     sender = 'craftsfish@163.com'
     receivers = ['craftsfish@163.com']
 
-    message = MIMEText('ok', 'plain', 'utf-8')
-    message['From'] = Header("lcj", 'utf-8')
-    message['To'] =  Header("lcj", 'utf-8')
+    msg = MIMEText('ok', 'plain', 'utf-8')
+    msg['From'] = Header("lcj", 'utf-8')
+    msg['To'] =  Header("lcj", 'utf-8')
 
     subject = 'heartbeat'
-    message['Subject'] = Header(subject, 'utf-8')
+    msg['Subject'] = Header(subject, 'utf-8')
 
     try:
         smtpObj = smtplib.SMTP_SSL()
         smtpObj.connect(mail_host, 465)
         smtpObj.login(mail_user,mail_pass)
-        smtpObj.sendmail(sender, receivers, message.as_string())
+        smtpObj.sendmail(sender, receivers, msg.as_string())
         print "ok"
     except smtplib.SMTPException:
         print "Error: failed"
