@@ -7,12 +7,20 @@
     "48": "icons/beasts-48.png"
   },
 
+  "applications": {
+    "gecko": {
+      "id": "ping_pong@example.org",
+      "strict_min_version": "50.0"
+    }
+  },
+
   "permissions": [
     "<all_urls>",
     "activeTab",
     "tabs",
     "webNavigation",
     "webRequest",
+    "nativeMessaging",
     "alarms"
   ],  
 

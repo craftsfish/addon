@@ -407,3 +407,18 @@ function sndMsg(id, a, d) {
   log(`send message to ${Pages[id].name} : action is ${a}, data is ${d}`);
   return browser.tabs.sendMessage(Pages[id].tabId, {action: a, data: d});
 }
+
+/*
+On startup, connect to the "ping_pong" app.
+*/
+var port = browser.runtime.connectNative("ping_pong");
+
+/*
+Listen for messages from the app.
+*/
+port.onMessage.addListener((response) => {
+  console.log("Received: " + response);
+});
+
+console.log("Sending:  ping");
+port.postMessage("ping");
