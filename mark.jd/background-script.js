@@ -324,7 +324,7 @@ function startProcessing() {
 
 function jdLogin() {
   sndMsg(ID_JDLOGIN, "composeLogin")
-  .then((m) => {log(m);})
+  .then(() => {throw new Error("Currently, we cannot set login info automatically.");})
   .catch(onError);
 }
 
@@ -344,9 +344,9 @@ var Pages = [
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   if (changeInfo.status == "complete") { /* loading complete */
-    log("========> onTabsUpdated complete");
-    console.log(changeInfo);
-    console.log(tabInfo);
+    //log("========> onTabsUpdated complete");
+    //console.log(changeInfo);
+    //console.log(tabInfo);
 
     var i = 0;
     for (i=0; i<Pages.length; i++) {
