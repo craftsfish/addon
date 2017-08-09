@@ -419,7 +419,7 @@ var port = browser.runtime.connectNative("ping_pong");
 Listen for messages from the app.
 */
 port.onMessage.addListener((response) => {
-  log("Received: " + response);
+  log("Received Native App Message: " + response);
 });
 
 port.onDisconnect.addListener((p) => {
