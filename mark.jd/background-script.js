@@ -124,7 +124,7 @@ function onOrderCloseDelayed() {
 }
 
 function onGetAddress(m) {
-  log(`Get address complete ${m}`);
+  log("Get address complete");
   address = m;
   return createDelayPromise(1*1000);
 }
@@ -419,5 +419,11 @@ var port = browser.runtime.connectNative("ping_pong");
 Listen for messages from the app.
 */
 port.onMessage.addListener((response) => {
-  console.log("Received: " + response);
+  log("Received: " + response);
+});
+
+port.onDisconnect.addListener((p) => {
+  if (p.error) {
+    log(`Disconnected due to an error: ${p.error.message}`);
+  }
 });
