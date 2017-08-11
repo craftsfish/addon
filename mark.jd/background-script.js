@@ -359,11 +359,6 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
           Pages[i].resolve("ok");
           Pages[i].resolve = undefined;;
         }
-
-        if (i == ID_JDLOGIN) {
-          log("start login");
-          jdLogin();
-        }
       }
     }
   }
