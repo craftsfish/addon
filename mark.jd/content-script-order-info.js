@@ -19,8 +19,8 @@ function showMobile()
 function getAddress()
 {
   var m = $("#mobile")[0].innerHTML;
-  var n = $("#mobile")[0].parentNode.parentNode.childNodes[0].childNodes[3].innerHTML;
-  var a = $("#mobile")[0].parentNode.parentNode.childNodes[2].childNodes[3].innerHTML;
+  var n = $("tr:contains('地址')")[1].parentNode.childNodes[2].childNodes[3].innerHTML;
+  var a = $("tr:contains('地址')")[1].parentNode.childNodes[4].childNodes[3].innerHTML;
   return Promise.resolve(n + "," + m + "," + a + ",000000");
 }
 
