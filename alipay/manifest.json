@@ -7,9 +7,17 @@
     "48": "icons/beasts-48.png"
   },
 
+  "permissions": [
+    "tabs"
+  ],
+
   "browser_action": {
     "default_icon": "icons/beasts-32.png",
     "default_title": "Alipay"
+  },
+
+  "background": {
+    "scripts": ["common.js", "bg.js"]
   },
 
   "content_scripts": [
