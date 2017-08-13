@@ -51,6 +51,8 @@ function handleRecords()
   .then(onDetailOpenIssued)
   .then(onDetailOpened)
   .then(onFundersReceived)
+  .then(onCloseDetailIssued)
+  .then(onDetailClosed)
   .catch(onRecordError);
 }
 
@@ -69,6 +71,14 @@ function onDetailOpened() {
 
 function onFundersReceived(m) {
   log(m);
+  return new Promise((resolve) => {resolve("closeDetail");});
+}
+
+function onCloseDetailIssued() {
+  return browser.tabs.remove(tabid_detail);
+}
+
+function onDetailClosed() {
   throw new Error("xxx");
 }
 
