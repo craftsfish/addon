@@ -26,6 +26,10 @@
       "js": ["jquery/jquery-1.4.min.js"]
     },
     {
+      "matches": ["https://consumeprod.alipay.com/record/detail/simpleDetail.htm*"],
+      "js": ["common.js", "detail.js"]
+    },
+    {
       "matches": ["https://consumeprod.alipay.com/record/advanced.htm"],
       "js": ["common.js", "alipay.js"]
     }
