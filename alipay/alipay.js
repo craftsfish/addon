@@ -15,17 +15,14 @@ var querys = [
 
 function getInfo(i, q) {
   var selector = jqItems + ":eq(" + i.toString() + ") " + q;
-  log(selector);
   return jQuery(selector)[0].innerHTML.replace(/[\t\n]/g, "");
 }
 
 function getDetail(i) {
-  var j = 0;
-  var result = undefined;
-
   var r = getInfo(i, ".status p");
   if (r != "交易关闭") {
-    result = "";
+    var result = "";
+    var j = 0;
     for (j=0; j<querys.length; j++) {
       var r = getInfo(i, querys[j]);
       if (j > 0) {
@@ -33,8 +30,10 @@ function getDetail(i) {
       }
       result += r;
     }
+    return Promise.resolve(result);
+  } else {
+    throw new Error("Deal closed!");
   }
-  return Promise.resolve(result);
 }
 
 function onMsg(m)

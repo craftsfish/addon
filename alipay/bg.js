@@ -32,6 +32,10 @@ function onTotalReceived(m) {
   handleRecords();
 }
 
+function onError(error) {
+  err(`Error: ${error}`);
+}
+
 function handleRecords()
 {
   if (cur >= total) {
@@ -41,7 +45,7 @@ function handleRecords()
   log(`handling: ${cur+1}/${total}`);
   sndMsg(tabid_record, "queryDetail", cur)
   .then(onDetailReceived)
-  .catch(onError);
+  .catch(onRecordError);
 }
 
 function onDetailReceived(m) {
@@ -50,10 +54,11 @@ function onDetailReceived(m) {
   handleRecords();
 }
 
-function onError(error) {
+function onRecordError(error) {
   err(`Error: ${error}`);
+  cur++;
+  handleRecords();
 }
-
 /* interaction with content scripts */
 function sndMsg(id, a, d) {
   log(`send message to ${id} : action is ${a}, data is ${d}`);
