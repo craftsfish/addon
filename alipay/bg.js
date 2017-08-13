@@ -43,12 +43,19 @@ function handleRecords()
   }
 
   log(`handling: ${cur+1}/${total}`);
-  sndMsg(tabid_record, "queryDetail", cur)
-  .then(onDetailReceived)
+  sndMsg(tabid_record, "queryBrief", cur)
+  .then(onBriefReceived)
+  .then(onDetailOpened)
   .catch(onRecordError);
 }
 
-function onDetailReceived(m) {
+function onBriefReceived(m) {
+  log(m);
+  return sndMsg(tabid_record, "openDetail", cur)
+}
+
+function onDetailOpened(m) {
+  throw new Error("xxx");
   log(m);
   cur++;
   handleRecords();

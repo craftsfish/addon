@@ -13,12 +13,16 @@ var querys = [
   ".amount-pay"
 ];
 
-function getInfo(i, q) {
+function getItem(i, q) {
   var selector = jqItems + ":eq(" + i.toString() + ") " + q;
-  return jQuery(selector)[0].innerHTML.replace(/[\t\n]/g, "");
+  return jQuery(selector)[0];
 }
 
-function getDetail(i) {
+function getInfo(i, q) {
+  return getItem(i,q).innerHTML.replace(/[\t\n]/g, "");
+}
+
+function getBrief(i) {
   var r = getInfo(i, ".status p");
   if (r != "交易关闭") {
     var result = "";
@@ -36,12 +40,19 @@ function getDetail(i) {
   }
 }
 
+function openDetail(i) {
+  getItem(i, ".consume-title a").click();
+  return Promise.resolve("ok");
+}
+
 function onMsg(m)
 {
   if (m.action == "queryTotal") {
     return getTotal();
-  } else if (m.action == "queryDetail") {
-    return getDetail(m.data);
+  } else if (m.action == "queryBrief") {
+    return getBrief(m.data);
+  } else if (m.action == "openDetail") {
+    return openDetail(m.data);
   }
 }
 browser.runtime.onMessage.addListener(onMsg);
