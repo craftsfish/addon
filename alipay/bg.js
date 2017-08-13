@@ -1,6 +1,8 @@
 log("background");
 
 var tabid_record = undefined;
+var cur = undefined;
+var total = undefined;
 
 /* browser action handling */
 browser.browserAction.onClicked.addListener(startProcessing);
@@ -25,7 +27,25 @@ function onRecordFound(tabs) {
 }
 
 function onTotalReceived(m) {
+  total = m;
+  cur = 0;
+  handleRecords();
+}
+
+function onDetailReceived(m) {
   log(m);
+}
+
+function handleRecords()
+{
+  if (cur >= total) {
+    return;
+  }
+
+  log(`handling: ${cur}/${total}`);
+  sndMsg(tabid_record, "queryDetail", cur)
+  .then(onDetailReceived)
+  .catch(onError);
 }
 
 function onError(error) {
@@ -34,6 +54,6 @@ function onError(error) {
 
 /* interaction with content scripts */
 function sndMsg(id, a, d) {
-  log(`send message to id : action is ${a}, data is ${d}`);
+  log(`send message to ${id} : action is ${a}, data is ${d}`);
   return browser.tabs.sendMessage(id, {action: a, data: d});
 }
