@@ -13,12 +13,26 @@ var querys = [
   ".amount-pay"
 ];
 
+function getInfo(i, q) {
+  var selector = jqItems + ":eq(" + i.toString() + ") " + q;
+  log(selector);
+  return jQuery(selector)[0].innerHTML.replace(/[\t\n]/g, "");
+}
+
 function getDetail(i) {
   var j = 0;
   var result = undefined;
-  for (j=0; j<querys.length; j++) {
-    var selector = jqItems + ":eq(" + i.toString() + ") " + querys[j];
-    result += jQuery(selector)[0].innerHTML;
+
+  var r = getInfo(i, ".status p");
+  if (r != "交易关闭") {
+    result = "";
+    for (j=0; j<querys.length; j++) {
+      var r = getInfo(i, querys[j]);
+      if (j > 0) {
+        result += ",";
+      }
+      result += r;
+    }
   }
   return Promise.resolve(result);
 }
