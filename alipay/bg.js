@@ -1,6 +1,7 @@
 log("background");
 
 var tabid_record = undefined;
+var tabid_detail = undefined;
 var resolve_detail = undefined;
 var regexp_detail = new RegExp("^https:\/\/consumeprod.alipay.com\/record\/detail\/simpleDetail.htm\\\?.*$");
 var cur = undefined;
@@ -49,6 +50,7 @@ function handleRecords()
   .then(onBriefReceived)
   .then(onDetailOpenIssued)
   .then(onDetailOpened)
+  .then(onFundersReceived)
   .catch(onRecordError);
 }
 
@@ -61,7 +63,12 @@ function onDetailOpenIssued(m) {
   return new Promise((resolve) => {resolve_detail = resolve;});
 }
 
-function onDetailOpened(m) {
+function onDetailOpened() {
+  return sndMsg(tabid_detail, "getFunders")
+}
+
+function onFundersReceived(m) {
+  log(m);
   throw new Error("xxx");
 }
 
@@ -74,6 +81,7 @@ function onRecordError(error) {
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   if (changeInfo.status == "complete") { /* loading complete */
     if (tabInfo.url.match(regexp_detail) != null) {
+      tabid_detail = tabId;
       if (resolve_detail) {
         resolve_detail("ok");
         resolve_detail = undefined;
