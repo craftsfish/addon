@@ -3,5 +3,5 @@
   "description": "Write records into file",
   "path": "/home/lcj/work/addon/alipay/app/alipay.py",
   "type": "stdio",
-  "allowed_extensions": [ "ping_pong@example.org" ]
+  "allowed_extensions": [ "alipay@lcj.org" ]
 }

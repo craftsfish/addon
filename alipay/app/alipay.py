@@ -1,8 +1,13 @@
 #!/usr/bin/python
+# -*- coding: UTF-8 -*-
 
 import sys
 import json
 import struct
+
+def log(m):
+  f.write(m)
+  f.flush()
 
 def getMessage():
     rawLength = sys.stdin.read(4)
@@ -27,5 +32,12 @@ def sendMessage(encodedMessage):
 
 while True:
     receivedMessage = getMessage()
-    if receivedMessage == "ping":
-        sendMessage(encodeMessage("pong"))
+    if receivedMessage == "open":
+      f = open('/tmp/alipay.csv', 'w')
+      sendMessage(encodeMessage("opened"))
+    elif receivedMessage == "close":
+      f.close();
+      sendMessage(encodeMessage("closed"))
+    else:
+      log(receivedMessage.encode('utf8'))
+      sendMessage(encodeMessage("recorded"))

@@ -42,6 +42,7 @@ function onError(error) {
 function handleRecords()
 {
   if (cur >= total) {
+    port.postMessage("close");
     return;
   }
 
@@ -58,6 +59,7 @@ function handleRecords()
 
 function onBriefReceived(m) {
   log(m);
+  port.postMessage(m);
   return sndMsg(tabid_record, "openDetail", cur)
 }
 
@@ -71,6 +73,7 @@ function onDetailOpened() {
 
 function onFundersReceived(m) {
   log(m);
+  port.postMessage(","+m+"\n");
   return new Promise((resolve) => {resolve("closeDetail");});
 }
 
@@ -86,6 +89,8 @@ function onDetailClosed() {
 
 function onRecordError(error) {
   err(`Error: ${error}`);
+  cur++;
+  handleRecords();
 }
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
@@ -107,3 +112,22 @@ function sndMsg(id, a, d) {
   log(`send message to ${id} : action is ${a}, data is ${d}`);
   return browser.tabs.sendMessage(id, {action: a, data: d});
 }
+
+/*
+On startup, connect to the "ping_pong" app.
+*/
+var port = browser.runtime.connectNative("alipay");
+port.postMessage("open");
+
+/*
+Listen for messages from the app.
+*/
+port.onMessage.addListener((response) => {
+  log("Received Native App Message: " + response);
+});
+
+port.onDisconnect.addListener((p) => {
+  if (p.error) {
+    log(`Disconnected due to an error: ${p.error.message}`);
+  }
+});

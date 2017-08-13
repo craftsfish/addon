@@ -7,7 +7,15 @@
     "48": "icons/beasts-48.png"
   },
 
+  "applications": {
+    "gecko": {
+      "id": "alipay@lcj.org",
+      "strict_min_version": "50.0"
+    }
+  },
+
   "permissions": [
+    "nativeMessaging",
     "tabs"
   ],
 
