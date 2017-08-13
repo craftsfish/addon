@@ -79,13 +79,13 @@ function onCloseDetailIssued() {
 }
 
 function onDetailClosed() {
-  throw new Error("xxx");
+  tabid_detail = undefined;
+  cur++;
+  handleRecords();
 }
 
 function onRecordError(error) {
   err(`Error: ${error}`);
-  //cur++;
-  //handleRecords();
 }
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {

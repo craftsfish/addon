@@ -6,12 +6,18 @@ function getFunders() {
   var result = "";
 
   for (i=0; i<funders.length; i++) {
+    if (i > 0) {
+      result += ",";
+    }
+
+    var f = undefined;
     var a = funders[i].getElementsByTagName("a");
     if (a.length == 0) {
-      result += funders[i].innerHTML;
+      f = funders[i];
     } else {
-      result += a[0].innerHTML;
+      f = a[0];
     }
+    result += f.innerHTML.replace(/[\t\n]/g, "");
   }
   return Promise.resolve(result);
 }
