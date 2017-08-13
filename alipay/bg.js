@@ -32,20 +32,22 @@ function onTotalReceived(m) {
   handleRecords();
 }
 
-function onDetailReceived(m) {
-  log(m);
-}
-
 function handleRecords()
 {
   if (cur >= total) {
     return;
   }
 
-  log(`handling: ${cur}/${total}`);
+  log(`handling: ${cur+1}/${total}`);
   sndMsg(tabid_record, "queryDetail", cur)
   .then(onDetailReceived)
   .catch(onError);
+}
+
+function onDetailReceived(m) {
+  log(m);
+  cur++;
+  handleRecords();
 }
 
 function onError(error) {
