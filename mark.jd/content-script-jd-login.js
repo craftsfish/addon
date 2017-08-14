@@ -1,6 +1,6 @@
 console.log("============== jd login content script loaded");
 
-function composeLogin()
+function getWindowSize()
 {
   var x = $("#account-login")[0];
   new Promise((resolve)=>{resolve("ok")}).then(()=>{x.click()});
@@ -9,8 +9,8 @@ function composeLogin()
 
 function onMsg(m)
 {
-  if (m.action == "composeLogin") {
-    return composeLogin();
+  if (m.action == "getWindowSize") {
+    return getWindowSize();
   }
 }
 browser.runtime.onMessage.addListener(onMsg);

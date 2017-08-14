@@ -1,7 +1,7 @@
 var resolve_setwindow = undefined;
 
 function jdLogin() {
-  sndMsg(ID_JDLOGIN, "composeLogin")
+  sndMsg(ID_JDLOGIN, "getWindowSize")
   .then(onJDComposeLogin)
   .then(() => {throw new Error("Currently, we cannot set login info automatically.");})
   .catch(onJDLoginError);

@@ -414,6 +414,10 @@ Listen for messages from the app.
 */
 port.onMessage.addListener((response) => {
   log("Received Native App Message: " + response);
+  if (response == "set window size ok") {
+    resolve_setwindow("ok");
+    resolve_setwindow = undefined;
+  }
 });
 
 port.onDisconnect.addListener((p) => {
