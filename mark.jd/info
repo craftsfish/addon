@@ -1,0 +1,3 @@
+$("#loginform-username")[0].value = ""
+$("#loginform-password")[0].value = ""
+$(".dl")[0].click()
