@@ -64,7 +64,7 @@ while True:
     receivedMessage = getMessage()
     if receivedMessage == "ping":
         sendMessage(encodeMessage(sendmail()))
-    elif receivedMessage['m'] == "window size":
-        y_offset = pyautogui.size()[1] - 24 - receivedMessage['h'];
-        sendMessage(encodeMessage("set window size ok"))
-        sendMessage(encodeMessage(y_offset))
+    elif receivedMessage == "inputUser":
+        sendMessage(encodeMessage("xxx"))
+    else:
+        sendMessage(encodeMessage("unknown background message"))

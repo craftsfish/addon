@@ -1,15 +1,15 @@
-var resolve_setwindow = undefined;
+var resolve_jdlogin = undefined;
 
 function jdLogin() {
-  sndMsg(ID_JDLOGIN, "getWindowSize")
+  sndMsg(ID_JDLOGIN, "composeLogin")
   .then(onJDComposeLogin)
   .then(() => {throw new Error("Currently, we cannot set login info automatically.");})
   .catch(onJDLoginError);
 }
 
 function onJDComposeLogin(m) {
-  port.postMessage(m);
-  return new Promise((resolve)=>{resolve_setwindow = resolve;});
+  port.postMessage("inputUser");
+  return new Promise((resolve)=>{resolve_jdlogin = resolve;});
 }
 
 function onJDLoginError(error) {
