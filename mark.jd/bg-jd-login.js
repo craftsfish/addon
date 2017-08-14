@@ -4,7 +4,7 @@ function jdLogin() {
   sndMsg(ID_JDLOGIN, "composeLogin")
   .then(onJDComposeLogin)
   .then(onJDUserInputed)
-  .then(() => {throw new Error("Currently, we cannot set login info automatically.");})
+  .then(onJDPasswordInputed)
   .catch(onJDLoginError);
 }
 
@@ -16,6 +16,11 @@ function onJDComposeLogin(m) {
 function onJDUserInputed() {
   port.postMessage("inputPassword");
   return new Promise((resolve)=>{resolve_jdlogin = resolve;});
+}
+
+function onJDPasswordInputed() {
+  port.postMessage("login");
+  return new Promise((resolve)=>{resolve("ok")});
 }
 
 function onJDLoginError(error) {

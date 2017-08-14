@@ -69,7 +69,9 @@ while True:
         x, y = pos[0]
         pyautogui.moveTo(x, y, duration=0.25)
         pyautogui.click()
-        pyautogui.typewrite('test', 0.25);
+        pyautogui.typewrite(['shiftleft'], 0.25)
+        pyautogui.typewrite('weilvchujuzhuanyingdian ', 0.25)
+        pyautogui.typewrite(['shiftleft'], 0.25)
         sendMessage(encodeMessage("inputUser ok"))
     elif receivedMessage == "inputPassword":
         x, y = pos[1]
@@ -77,5 +79,9 @@ while True:
         pyautogui.click()
         pyautogui.typewrite('password', 0.25);
         sendMessage(encodeMessage("inputPassword ok"))
+    elif receivedMessage == "login":
+        x, y = pos[2]
+        pyautogui.moveTo(x, y, duration=0.25)
+        pyautogui.click()
     else:
         sendMessage(encodeMessage("unknown background message"))
