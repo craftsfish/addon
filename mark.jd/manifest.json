@@ -25,7 +25,7 @@
   ],  
 
   "background": {
-    "scripts": ["background-script.js"]
+    "scripts": ["bg-jd-login.js", "background-script.js"]
   },
 
   "browser_action": {

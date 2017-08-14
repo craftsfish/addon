@@ -16,7 +16,6 @@ var address = "";
 var postID = "";
 var active = 0;
 var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
-var resolve_setwindow = undefined;
 
 function createDelayPromise(timeout) {
   delayPromise.expireAt = new Date().getTime() + timeout;
@@ -323,18 +322,6 @@ function startProcessing() {
   .then(onEmptyReload)
   .then(onTotalReceived)
   .catch(onError);
-}
-
-function jdLogin() {
-  sndMsg(ID_JDLOGIN, "composeLogin")
-  .then(onJDComposeLogin)
-  .then(() => {throw new Error("Currently, we cannot set login info automatically.");})
-  .catch(onError);
-}
-
-function onJDComposeLogin(m) {
-  port.postMessage(m);
-  return new Promise((resolve)=>{resolve_setwindow = resolve;});
 }
 
 /*
