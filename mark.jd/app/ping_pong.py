@@ -4,8 +4,13 @@ import sys
 import json
 import struct
 import smtplib
+import os
+import pyautogui
 from email.mime.text import MIMEText
 from email.header import Header
+
+x_offset = 0;
+y_offset = 0;
 
 def sendmail():
     mail_host="smtp.163.com"
@@ -59,3 +64,7 @@ while True:
     receivedMessage = getMessage()
     if receivedMessage == "ping":
         sendMessage(encodeMessage(sendmail()))
+    elif receivedMessage['m'] == "window size":
+        y_offset = pyautogui.size()[1] - 24 - receivedMessage['h'];
+        sendMessage(encodeMessage("set window size ok"))
+        sendMessage(encodeMessage(y_offset))
