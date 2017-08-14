@@ -9,8 +9,9 @@ import pyautogui
 from email.mime.text import MIMEText
 from email.header import Header
 
-x_offset = 0;
-y_offset = 0;
+f = open('position', 'r')
+pos = json.load(f)
+f.close()
 
 def sendmail():
     mail_host="smtp.163.com"
@@ -65,6 +66,16 @@ while True:
     if receivedMessage == "ping":
         sendMessage(encodeMessage(sendmail()))
     elif receivedMessage == "inputUser":
-        sendMessage(encodeMessage("xxx"))
+        x, y = pos[0]
+        pyautogui.moveTo(x, y, duration=0.25)
+        pyautogui.click()
+        pyautogui.typewrite('test', 0.25);
+        sendMessage(encodeMessage("inputUser ok"))
+    elif receivedMessage == "inputPassword":
+        x, y = pos[1]
+        pyautogui.moveTo(x, y, duration=0.25)
+        pyautogui.click()
+        pyautogui.typewrite('password', 0.25);
+        sendMessage(encodeMessage("inputPassword ok"))
     else:
         sendMessage(encodeMessage("unknown background message"))
