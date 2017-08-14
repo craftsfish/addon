@@ -16,6 +16,7 @@ var address = "";
 var postID = "";
 var active = 0;
 var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
+var jd_auto_login = 0;
 
 function createDelayPromise(timeout) {
   delayPromise.expireAt = new Date().getTime() + timeout;
@@ -289,6 +290,7 @@ function onJDReload() {
 }
 
 function onJDFound(tabs) {
+  jd_auto_login = 1;
   if (tabs.length == 1) {
     browser.tabs.reload(tabs[0].id);
     return new Promise((resolve, reject) => {Pages[ID_JD].resolve = resolve;});
@@ -354,9 +356,10 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
           Pages[i].resolve = undefined;;
         }
 
-        if (i == ID_JDLOGIN) {
+        if ((i == ID_JDLOGIN) && (jd_auto_login)){
           log("jd login complete!");
           jdLogin();
+          jd_auto_login = 0;
         }
       }
     }
