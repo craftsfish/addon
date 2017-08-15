@@ -9,6 +9,7 @@ const ID_JDLOGIN = 7;
 const ID_FAKELOGIN = 8;
 const ID_EXPRESSLOGIN = 9;
 const ID_QQLOGIN = 10;
+const ID_FAKEINDEX = 11;
 const taskDelay = 5*60*1000;
 
 var total = -1;
@@ -351,7 +352,8 @@ var Pages = [
   {name:"JDLogin", regexp: new RegExp("^https:\/\/passport.shop.jd.com\/login\/index.action\\\?.*$")},
   {name:"FakeLogin", regexp: new RegExp("^http:\/\/www.dasbu.com\/site\/login$")},
   {name:"ExpressLogin", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=login$")},
-  {name:"QQLogin", regexp: new RegExp("^https:\/\/graph.qq.com\/oauth\/.*$")}
+  {name:"QQLogin", regexp: new RegExp("^https:\/\/graph.qq.com\/oauth\/.*$")},
+  {name:"FakeIndex", regexp: new RegExp("^http:\/\/www.pianyilo.com\/index.php$")}
 ];
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
@@ -390,6 +392,9 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
           log("qq login complete!");
           qqLogin();
           qq_auto_login = 0;
+        }
+        if (i == ID_FAKEINDEX) {
+          browser.tabs.update(tabId, {url: "http://www.pianyilo.com/flow.php?step=checkout&id=52"});
         }
       }
     }
