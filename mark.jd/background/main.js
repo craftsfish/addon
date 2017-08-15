@@ -7,6 +7,7 @@ const ID_EXPRESS = 5;
 const ID_POSTID = 6;
 const ID_JDLOGIN = 7;
 const ID_FAKELOGIN = 8;
+const ID_EXPRESSLOGIN = 9;
 const taskDelay = 5*60*1000;
 
 var total = -1;
@@ -19,6 +20,7 @@ var active = 0;
 var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
 var jd_auto_login = 0;
 var fake_auto_login = 0;
+var express_auto_login = 0;
 
 function createDelayPromise(timeout) {
   delayPromise.expireAt = new Date().getTime() + timeout;
@@ -256,6 +258,7 @@ function onEmptyReload() {
 }
 
 function onEmptyFound(tabs) {
+  express_auto_login = 1;
   if (tabs.length == 1) {
     browser.tabs.update(tabs[0].id, {active: true});
     browser.tabs.reload(tabs[0].id);
@@ -344,7 +347,8 @@ var Pages = [
   {name:"ExpressComposer", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=checkout&id=52.*$")},
   {name:"ExpressResult", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=orderck.*$")},
   {name:"JDLogin", regexp: new RegExp("^https:\/\/passport.shop.jd.com\/login\/index.action\\\?.*$")},
-  {name:"FakeLogin", regexp: new RegExp("^http:\/\/www.dasbu.com\/site\/login$")}
+  {name:"FakeLogin", regexp: new RegExp("^http:\/\/www.dasbu.com\/site\/login$")},
+  {name:"ExpressLogin", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=login$")}
 ];
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
@@ -372,6 +376,10 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
           log("fake login complete!");
           fakeLogin();
           fake_auto_login = 0;
+        }
+        if ((i == ID_EXPRESSLOGIN) && (express_auto_login)){
+          log("express login complete!");
+          express_auto_login = 0;
         }
       }
     }
