@@ -255,6 +255,7 @@ function onEmptyReload() {
 
 function onEmptyFound(tabs) {
   if (tabs.length == 1) {
+    browser.tabs.update(tabs[0].id, {active: true});
     browser.tabs.reload(tabs[0].id);
     return new Promise((resolve, reject) => {Pages[ID_EXPRESS].resolve = resolve;});
   } else {
@@ -273,6 +274,7 @@ function onFakeOrderReload() {
 
 function onFakeOrderFound(tabs) {
   if (tabs.length == 1) {
+    browser.tabs.update(tabs[0].id, {active: true});
     browser.tabs.reload(tabs[0].id);
     return new Promise((resolve, reject) => {Pages[ID_FAKE].resolve = resolve;});
   } else {
@@ -292,6 +294,7 @@ function onJDReload() {
 function onJDFound(tabs) {
   jd_auto_login = 1;
   if (tabs.length == 1) {
+    browser.tabs.update(tabs[0].id, {active: true});
     browser.tabs.reload(tabs[0].id);
     return new Promise((resolve, reject) => {Pages[ID_JD].resolve = resolve;});
   } else {
