@@ -8,6 +8,7 @@ const ID_POSTID = 6;
 const ID_JDLOGIN = 7;
 const ID_FAKELOGIN = 8;
 const ID_EXPRESSLOGIN = 9;
+const ID_QQLOGIN = 10;
 const taskDelay = 5*60*1000;
 
 var total = -1;
@@ -21,6 +22,7 @@ var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
 var jd_auto_login = 0;
 var fake_auto_login = 0;
 var express_auto_login = 0;
+var qq_auto_login = 0;
 
 function createDelayPromise(timeout) {
   delayPromise.expireAt = new Date().getTime() + timeout;
@@ -348,7 +350,8 @@ var Pages = [
   {name:"ExpressResult", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=orderck.*$")},
   {name:"JDLogin", regexp: new RegExp("^https:\/\/passport.shop.jd.com\/login\/index.action\\\?.*$")},
   {name:"FakeLogin", regexp: new RegExp("^http:\/\/www.dasbu.com\/site\/login$")},
-  {name:"ExpressLogin", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=login$")}
+  {name:"ExpressLogin", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=login$")},
+  {name:"QQLogin", regexp: new RegExp("^https:\/\/graph.qq.com\/oauth\/.*$")}
 ];
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
@@ -380,7 +383,13 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
         if ((i == ID_EXPRESSLOGIN) && (express_auto_login)){
           log("express login complete!");
           expressLogin();
+          qq_auto_login = 1;
           express_auto_login = 0;
+        }
+        if ((i == ID_QQLOGIN) && (qq_auto_login)){
+          log("qq login complete!");
+          qqLogin();
+          qq_auto_login = 0;
         }
       }
     }
