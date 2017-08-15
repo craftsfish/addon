@@ -9,8 +9,14 @@ import pyautogui
 from email.mime.text import MIMEText
 from email.header import Header
 
+# load positions
 f = open('position', 'r')
 pos = json.load(f)
+f.close()
+
+# load password
+f = open('x.pass', 'r')
+password = json.load(f)
 f.close()
 
 def sendmail():
@@ -84,5 +90,8 @@ while True:
         x, y = pos[2]
         pyautogui.moveTo(x, y, duration=0.25)
         pyautogui.click()
+    elif receivedMessage == "getFakeAccount":
+        m = {'m': "fakeaccount", 'd': password[1]}
+        sendMessage(encodeMessage(m))
     else:
         sendMessage(encodeMessage("unknown background message"))

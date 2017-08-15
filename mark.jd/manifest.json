@@ -63,6 +63,10 @@
       "js": ["content-script-jd-login.js"]
     },
     {
+      "matches": ["http://www.dasbu.com/site/login"],
+      "js": ["content/fake-login.js"]
+    },
+    {
       "matches": ["http://www.dasbu.com/seller/order/detail?id=*"],
       "js": ["content-script-detail.js"]
     },

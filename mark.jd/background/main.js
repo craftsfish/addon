@@ -6,6 +6,7 @@ const ID_OUT = 4;
 const ID_EXPRESS = 5;
 const ID_POSTID = 6;
 const ID_JDLOGIN = 7;
+const ID_FAKELOGIN = 8;
 const taskDelay = 5*60*1000;
 
 var total = -1;
@@ -17,6 +18,7 @@ var postID = "";
 var active = 0;
 var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
 var jd_auto_login = 0;
+var fake_auto_login = 0;
 
 function createDelayPromise(timeout) {
   delayPromise.expireAt = new Date().getTime() + timeout;
@@ -273,6 +275,7 @@ function onFakeOrderReload() {
 }
 
 function onFakeOrderFound(tabs) {
+  fake_auto_login = 1;
   if (tabs.length == 1) {
     browser.tabs.update(tabs[0].id, {active: true});
     browser.tabs.reload(tabs[0].id);
@@ -340,7 +343,8 @@ var Pages = [
   {name:"JDOutput", regexp: new RegExp("^https:\/\/order.shop.jd.com\/order\/sopUp_oneOut.action\\\?.*$")},
   {name:"ExpressComposer", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=checkout&id=52.*$")},
   {name:"ExpressResult", regexp: new RegExp("^http:\/\/www.pianyilo.com\/flow.php\\\?step=orderck.*$")},
-  {name:"JDLogin", regexp: new RegExp("^https:\/\/passport.shop.jd.com\/login\/index.action\\\?.*$")}
+  {name:"JDLogin", regexp: new RegExp("^https:\/\/passport.shop.jd.com\/login\/index.action\\\?.*$")},
+  {name:"FakeLogin", regexp: new RegExp("^http:\/\/www.dasbu.com\/site\/login$")}
 ];
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
@@ -363,6 +367,11 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
           log("jd login complete!");
           jdLogin();
           jd_auto_login = 0;
+        }
+        if ((i == ID_FAKELOGIN) && (fake_auto_login)){
+          log("fake login complete!");
+          fakeLogin();
+          fake_auto_login = 0;
         }
       }
     }
@@ -415,6 +424,9 @@ port.onMessage.addListener((response) => {
   } else if (response == "inputPassword ok") {
     resolve_jdlogin("ok");
     resolve_jdlogin = undefined;
+  } else if (response.m == "fakeaccount") {
+    resolve_fakelogin(response.d);
+    resolve_fakelogin = undefined;
   }
 });
 
