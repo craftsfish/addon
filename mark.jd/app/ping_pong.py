@@ -67,10 +67,14 @@ def sendMessage(encodedMessage):
     sys.stdout.write(encodedMessage['content'])
     sys.stdout.flush()
 
+def sndMsg(m, d):
+    msg = {'m': m, 'd': d}
+    sendMessage(encodeMessage(msg))
+
 while True:
     receivedMessage = getMessage()
     if receivedMessage == "ping":
-        sendMessage(encodeMessage(sendmail()))
+        sndMsg(sendmail())
     elif receivedMessage == "inputUser":
         x, y = pos[0]
         pyautogui.moveTo(x, y, duration=0.25)
@@ -79,19 +83,18 @@ while True:
         pyautogui.typewrite(['shiftleft'], 0.25)
         pyautogui.typewrite('weilvchujuzhuanyingdian ', 0.25)
         pyautogui.typewrite(['shiftleft'], 0.25)
-        sendMessage(encodeMessage("inputUser ok"))
+        sndMsg("inputUser ok")
     elif receivedMessage == "inputPassword":
         x, y = pos[1]
         pyautogui.moveTo(x, y, duration=0.25)
         pyautogui.click()
         pyautogui.typewrite('x', 0.25);
-        sendMessage(encodeMessage("inputPassword ok"))
+        sndMsg("inputPassword ok")
     elif receivedMessage == "login":
         x, y = pos[2]
         pyautogui.moveTo(x, y, duration=0.25)
         pyautogui.click()
     elif receivedMessage == "getFakeAccount":
-        m = {'m': "fakeaccount", 'd': password[1]}
-        sendMessage(encodeMessage(m))
+        sndMsg("fakeaccount", password[1])
     else:
-        sendMessage(encodeMessage("unknown background message"))
+        sndMsg("unknown background message")

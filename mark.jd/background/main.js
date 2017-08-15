@@ -417,14 +417,16 @@ var port = browser.runtime.connectNative("ping_pong");
 Listen for messages from the app.
 */
 port.onMessage.addListener((response) => {
-  log("Received Native App Message: " + response);
-  if (response == "inputUser ok") {
+  log("Received Native App Message: ");
+  console.log(response);
+  m = response.m
+  if (m == "inputUser ok") {
     resolve_jdlogin("ok");
     resolve_jdlogin = undefined;
-  } else if (response == "inputPassword ok") {
+  } else if (m == "inputPassword ok") {
     resolve_jdlogin("ok");
     resolve_jdlogin = undefined;
-  } else if (response.m == "fakeaccount") {
+  } else if (m == "fakeaccount") {
     resolve_fakelogin(response.d);
     resolve_fakelogin = undefined;
   }
