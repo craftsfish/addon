@@ -111,7 +111,8 @@ while True:
         pyautogui.typewrite(password[2][0], 0.25)
         x, y = pos[6]
         pyautogui.moveTo(x, y, duration=0.25)
-        pyautogui.click()
+        pyautogui.doubleClick()
+        pyautogui.typewrite(['delete'], 0.25)
         pyautogui.typewrite(password[2][1], 0.25)
         x, y = pos[7]
         pyautogui.moveTo(x, y, duration=0.25)
