@@ -67,7 +67,7 @@ def sendMessage(encodedMessage):
     sys.stdout.write(encodedMessage['content'])
     sys.stdout.flush()
 
-def sndMsg(m, d):
+def sndMsg(m, d=""):
     msg = {'m': m, 'd': d}
     sendMessage(encodeMessage(msg))
 
@@ -80,15 +80,13 @@ while True:
         pyautogui.moveTo(x, y, duration=0.25)
         pyautogui.doubleClick()
         pyautogui.typewrite(['delete'], 0.25)
-        pyautogui.typewrite(['shiftleft'], 0.25)
-        pyautogui.typewrite('weilvchujuzhuanyingdian ', 0.25)
-        pyautogui.typewrite(['shiftleft'], 0.25)
+        pyautogui.typewrite(password[0][0], 0.25)
         sndMsg("inputUser ok")
     elif receivedMessage == "inputPassword":
         x, y = pos[1]
         pyautogui.moveTo(x, y, duration=0.25)
         pyautogui.click()
-        pyautogui.typewrite('x', 0.25);
+        pyautogui.typewrite(password[0][1], 0.25)
         sndMsg("inputPassword ok")
     elif receivedMessage == "login":
         x, y = pos[2]
