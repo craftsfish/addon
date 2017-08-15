@@ -393,17 +393,6 @@ function handleAlarm(alarmInfo) {
 
 browser.alarms.onAlarm.addListener(handleAlarm);
 
-/* log function */
-function err(m) {
-  var t = new Date().toTimeString();
-  console.log(`[${t}]xxxxxxxxxxxx>	${m}`);
-}
-
-function log(m) {
-  var t = new Date().toTimeString();
-  console.log(`[${t}]---->	${m}`);
-}
-
 /* interaction with content scripts */
 function sndMsg(id, a, d) {
   log(`send message to ${Pages[id].name} : action is ${a}, data is ${d}`);
