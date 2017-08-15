@@ -11,7 +11,7 @@ from email.mime.text import MIMEText
 from email.header import Header
 
 # load positions
-f = open('position', 'r')
+f = open('x.pos', 'r')
 pos = json.load(f)
 f.close()
 
@@ -81,7 +81,9 @@ while True:
         pyautogui.moveTo(x, y, duration=0.25)
         pyautogui.doubleClick()
         pyautogui.typewrite(['delete'], 0.25)
+        pyautogui.typewrite(['shift'], 0.25)
         pyautogui.typewrite(password[0][0], 0.25)
+        pyautogui.typewrite(['shift'], 0.25)
         sndMsg("inputUser ok")
     elif receivedMessage == "inputPassword":
         x, y = pos[1]
