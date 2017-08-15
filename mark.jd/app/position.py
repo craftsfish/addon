@@ -20,12 +20,27 @@ p = pyautogui.position()
 print p
 pos.append(p)
 
-raw_input('Please move mouse to QQLogin button!')
+raw_input('Please move mouse to use QQ button!')
 p = pyautogui.position()
 print p
 pos.append(p)
 
 raw_input('Please move mouse to User&Passwd button!')
+p = pyautogui.position()
+print p
+pos.append(p)
+
+raw_input('Please move mouse to QQ User input!')
+p = pyautogui.position()
+print p
+pos.append(p)
+
+raw_input('Please move mouse to QQ Password input!')
+p = pyautogui.position()
+print p
+pos.append(p)
+
+raw_input('Please move mouse to QQ Login button!')
 p = pyautogui.position()
 print p
 pos.append(p)

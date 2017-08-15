@@ -5,6 +5,7 @@ import json
 import struct
 import smtplib
 import os
+import time
 import pyautogui
 from email.mime.text import MIMEText
 from email.header import Header
@@ -100,6 +101,18 @@ while True:
         pyautogui.click()
     elif receivedMessage == "qqAccountLogin":
         x, y = pos[4]
+        pyautogui.moveTo(x, y, duration=0.25)
+        pyautogui.click()
+        time.sleep(2)
+        x, y = pos[5]
+        pyautogui.moveTo(x, y, duration=0.25)
+        pyautogui.click()
+        pyautogui.typewrite(password[2][0], 0.25)
+        x, y = pos[6]
+        pyautogui.moveTo(x, y, duration=0.25)
+        pyautogui.click()
+        pyautogui.typewrite(password[2][1], 0.25)
+        x, y = pos[7]
         pyautogui.moveTo(x, y, duration=0.25)
         pyautogui.click()
     else:
