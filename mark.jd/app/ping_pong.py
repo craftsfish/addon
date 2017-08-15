@@ -94,5 +94,9 @@ while True:
         pyautogui.click()
     elif receivedMessage == "getFakeAccount":
         sndMsg("fakeaccount", password[1])
+    elif receivedMessage == "qqLogin":
+        x, y = pos[3]
+        pyautogui.moveTo(x, y, duration=0.25)
+        pyautogui.click()
     else:
         sndMsg("unknown background message")

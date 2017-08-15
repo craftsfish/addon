@@ -379,6 +379,7 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
         }
         if ((i == ID_EXPRESSLOGIN) && (express_auto_login)){
           log("express login complete!");
+          expressLogin();
           express_auto_login = 0;
         }
       }
