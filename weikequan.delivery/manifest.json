@@ -1,0 +1,38 @@
+{
+  "description": "Automatically delivery weikequan orders.",
+  "manifest_version": 2,
+  "name": "WeiKeQuan Delivery",
+  "version": "1.0",
+  "icons": {
+    "48": "icons/beasts-48.png"
+  },
+
+  "permissions": [
+    "<all_urls>",
+    "activeTab",
+    "tabs",
+    "webNavigation",
+    "webRequest",
+    "alarms"
+  ],
+
+  "browser_action": {
+    "default_icon": "icons/beasts-32.png",
+    "default_title": "WeiKeQuan"
+  },
+
+  "background": {
+    "scripts": ["common.js", "background-script.js"]
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["jquery/jquery-1.4.min.js", "common.js"]
+    },
+    {
+      "matches": ["https://porder.shop.jd.com/order/singleOut/*?selectedDelivery=2170"],
+      "js": ["content-script-jd.js"]
+    }
+  ]
+}
