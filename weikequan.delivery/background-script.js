@@ -7,6 +7,8 @@ var map = [
 var cur_order = 0;
 var reg_jd_deliver = new RegExp("https:\/\/porder.shop.jd.com\/order\/singleOut\/.*\?selectedDelivery=2170$");
 var t = new Date();
+var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
+var tab = 0;
 log(t.toDateString());
 log(t.toTimeString());
 
@@ -25,9 +27,32 @@ function createDelayPromise(timeout) {
 }
 
 function onJdOrderDone() {
-  browser.tabs.sendMessage(tabId, map[cur_order][1])
+  browser.tabs.sendMessage(tab, map[cur_order][1])
   .then(handleOrder);
 }
+
+
+/*
+ * periodic task
+ */
+const delayInMinutes = 0;
+const periodInMinutes = 0.05;
+browser.alarms.create("my-periodic-alarm", {
+  delayInMinutes,
+  periodInMinutes
+});
+
+function handleAlarm(alarmInfo) {
+  console.log("on alarm: " + alarmInfo.name);
+  if (delayPromise.expireAt != -1) {
+    if (new Date().getTime() > delayPromise.expireAt) {
+      delayPromise.resolve("TimeOut");
+      delayPromise.expireAt = -1;
+    }
+  }
+}
+browser.alarms.onAlarm.addListener(handleAlarm);
+
 
 /* browser action handling */
 function handleClick() {
@@ -40,6 +65,7 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
   if (changeInfo.status == "complete") { /* loading complete */
     if (tabInfo.url.match(reg_jd_deliver) != null) {
       log("正在处理订单: " + map[cur_order][0] + ", 快递单号: " + map[cur_order][1]);
+      tab = tabId
       createDelayPromise(5*1000).then(onJdOrderDone)
     }
   }
