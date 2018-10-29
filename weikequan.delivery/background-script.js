@@ -1,7 +1,7 @@
 log("WeiKeQuan background is running");
 
 var map = [
-	[81500013740, 55129],
+	[81500013740, 99999999],
 	[81162947187, 55130],
 ];
 var cur_order = 0;
@@ -21,7 +21,8 @@ browser.browserAction.onClicked.addListener(handleClick);
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   if (changeInfo.status == "complete") { /* loading complete */
     if (tabInfo.url.match(reg_jd_deliver) != null) {
-        log("================================" + tabInfo.url + cur_order);
+      log("正在处理订单: " + map[cur_order][0] + ", 快递单号: " + map[cur_order][1]);
+      browser.tabs.sendMessage(tabId, map[cur_order][1]);
     }
   }
 }
