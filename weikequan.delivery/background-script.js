@@ -18,6 +18,20 @@ function delay_1() {
   return createDelayPromise(1*1000);
 }
 
+function onWkqDeliveryError(error) {
+  err(error);
+  browser.tabs.remove(Pages[ID_WKQ_DELIVER].tabId);
+  startJdDelivery();
+}
+
+function wkq_remove_tab() {
+  return browser.tabs.remove(Pages[ID_WKQ_DELIVER].tabId);
+}
+
+function wkq_select_supplier() {
+  return sndMsg(ID_WKQ_DELIVER, 'select', map[cur_order][1])
+}
+
 function wkq_open_delivery_dialog() {
   return sndMsg(ID_WKQ_DELIVER, 'open', null)
 }
@@ -35,7 +49,13 @@ function startWkqDelivery() {
   return new Promise((resolve, reject) => {Pages[ID_WKQ_DELIVER].resolve = resolve;})
     .then(wkq_init)
     .then(wkq_on_init)
-    .then(wkq_open_delivery_dialog);
+    .then(wkq_open_delivery_dialog)
+    .then(delay_1)
+    .then(wkq_select_supplier)
+    .then(delay_1)
+    .then(wkq_remove_tab)
+    .then(startJdDelivery)
+    .catch(onWkqDeliveryError);
 }
 
 function onJdDeliveryError(error) {
@@ -45,7 +65,7 @@ function onJdDeliveryError(error) {
 }
 
 function remove_jd_tab() {
-  browser.tabs.remove(Pages[ID_JD_DELIVER].tabId);
+  return browser.tabs.remove(Pages[ID_JD_DELIVER].tabId);
 }
 
 function deliver() {
@@ -95,6 +115,7 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
     return
   }
 
+  log("loadcomplete")
   var i = 0;
   for (i=0; i<Pages.length; i++) {
     if (tabInfo.url.match(Pages[i].regexp) != null) {
