@@ -88,7 +88,7 @@ function startWkqDelivery() {
 
 function onJdDeliveryError(error) {
   err(error);
-  browser.tabs.remove(Pages[ID_JD_DELIVER].tabId);
+  //browser.tabs.remove(Pages[ID_JD_DELIVER].tabId);
   startWkqDelivery();
 }
 

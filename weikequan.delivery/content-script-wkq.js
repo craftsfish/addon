@@ -38,7 +38,7 @@ function select(id)
     }
   });
   $("iframe").contents().find(".input_305")[0].value = id;
-  $("iframe").contents().find("#btnSubmit")[0].click();
+  //$("iframe").contents().find("#btnSubmit")[0].click();
   return Promise.resolve("ok");
 }
 
