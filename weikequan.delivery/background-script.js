@@ -1,27 +1,38 @@
 log("WeiKeQuan background is running");
 
+const ID_JD_DELIVER = 0;
+const ID_WKQ_DELIVER = 1;
+var reg_jd_deliver = new RegExp("https:\/\/porder.shop.jd.com\/order\/singleOut\/.*\?selectedDelivery=2170$");
+var reg_wkq_deliver = new RegExp("https:\/\/qqq.wkquan2018.com\/Fine\/VTask");
+
 var map = [
 	[81162947187, 55130],
 	[81506877675, ''],
 ];
 var cur_order = 0;
-var reg_jd_deliver = new RegExp("https:\/\/porder.shop.jd.com\/order\/singleOut\/.*\?selectedDelivery=2170$");
-var reg_wkq_deliver = new RegExp("https:\/\/qqq.wkquan2018.com\/Fine\/VTask");
 var tab = -1;
 var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
 var wkq_query = false
 
-function handleOrder() {
-  cur_order++;
-  if (cur_order >= map.length) {
-    return
-  }
-  browser.tabs.create({url:"https://porder.shop.jd.com/order/singleOut/"+map[cur_order][0]+"?selectedDelivery=2170"});
-}
-
 function createDelayPromise(timeout) {
   delayPromise.expireAt = new Date().getTime() + timeout;
   return new Promise((resolve, reject)=>{delayPromise.resolve = resolve; delayPromise.reject = reject});
+}
+
+function onJdDeliveryError(error) {
+  err(error);
+  openWkq()
+}
+
+function handleOrder() {
+  startJdDelivery()
+  .then(onJdLoaded)
+  .then(openSupplierCandidates)
+  .then(selectSupplier)
+  .then(setExpressId)
+  .then(deliver)
+  .then(openWkq)
+  .catch(onJdDeliveryError);
 }
 
 function wkq_init() {
@@ -49,6 +60,19 @@ function openSupplierCandidates() {
   return sndMsg(tab, 'openSupplierCandidates', null)
 }
 
+function onJdLoaded() {
+  return createDelayPromise(1*1000);
+}
+
+function startJdDelivery() {
+  cur_order++;
+  if (cur_order >= map.length) {
+    return
+  }
+  browser.tabs.create({url:"https://porder.shop.jd.com/order/singleOut/"+map[cur_order][0]+"?selectedDelivery=2170"});
+  return new Promise((resolve, reject) => {Pages[ID_JD_DELIVER].resolve = resolve;});
+}
+
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   if (changeInfo.status == "complete") { /* loading complete */
     if (tabInfo.url.match(reg_jd_deliver) != null) {
@@ -68,6 +92,31 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
         wkq_init()
       } else {
         wkq_query = false
+      }
+    }
+  }
+}
+
+/*
+ * Tabs Updated Handling
+ */
+var Pages = [
+  {name:"jd_deliver", regexp: new RegExp("https:\/\/porder.shop.jd.com\/order\/singleOut\/.*\?selectedDelivery=2170$")},
+  {name:"wkq_deliver", regexp: new RegExp("https:\/\/qqq.wkquan2018.com\/Fine\/VTask")},
+];
+
+function onTabsUpdated(tabId, changeInfo, tabInfo) {
+  if (changeInfo.status != "complete") { /* loading complete */
+    return
+  }
+
+  var i = 0;
+  for (i=0; i<Pages.length; i++) {
+    if (tabInfo.url.match(Pages[i].regexp) != null) {
+      Pages[i].tabId = tabId;
+      if (Pages[i].resolve) {
+        Pages[i].resolve("ok");
+        Pages[i].resolve = undefined;;
       }
     }
   }
