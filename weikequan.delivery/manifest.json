@@ -33,6 +33,10 @@
     {
       "matches": ["https://porder.shop.jd.com/order/singleOut/*?selectedDelivery=2170"],
       "js": ["content-script-jd.js"]
+    },
+    {
+      "matches": ["https://qqq.wkquan2018.com/Fine/VTask"],
+      "js": ["content-script-wkq.js"]
     }
   ]
 }

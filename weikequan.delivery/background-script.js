@@ -6,8 +6,10 @@ var map = [
 ];
 var cur_order = 0;
 var reg_jd_deliver = new RegExp("https:\/\/porder.shop.jd.com\/order\/singleOut\/.*\?selectedDelivery=2170$");
+var reg_wkq_deliver = new RegExp("https:\/\/qqq.wkquan2018.com\/Fine\/VTask");
 var tab = -1;
 var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
+var wkq_query = false
 
 function handleOrder() {
   cur_order++;
@@ -20,6 +22,15 @@ function handleOrder() {
 function createDelayPromise(timeout) {
   delayPromise.expireAt = new Date().getTime() + timeout;
   return new Promise((resolve, reject)=>{delayPromise.resolve = resolve; delayPromise.reject = reject});
+}
+
+function wkq_init() {
+  wkq_query = true
+  return sndMsg(tab, 'init', map[cur_order][0])
+}
+
+function openWkq() {
+  browser.tabs.create({url:"https://qqq.wkquan2018.com/Fine/VTask"});
 }
 
 function deliver() {
@@ -41,15 +52,23 @@ function openSupplierCandidates() {
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
   if (changeInfo.status == "complete") { /* loading complete */
     if (tabInfo.url.match(reg_jd_deliver) != null) {
-      log("正在处理订单: " + map[cur_order][0] + ", 快递单号: " + map[cur_order][1]);
+      log("京东出库: " + map[cur_order][0] + ", 快递单号: " + map[cur_order][1]);
       tab = tabId
-      createDelayPromise(5*1000)
+      createDelayPromise(1*1000)
       .then(openSupplierCandidates)
       .then(selectSupplier)
       .then(setExpressId)
       .then(deliver)
-      .then(handleOrder)
+      .then(openWkq)
       .catch(onError);
+    } else if (tabInfo.url.match(reg_wkq_deliver) != null) {
+      log("威客圈出库: " + map[cur_order][0] + ", 快递单号: " + map[cur_order][1]);
+      tab = tabId
+      if (!wkq_query) {
+        wkq_init()
+      } else {
+        wkq_query = false
+      }
     }
   }
 }
@@ -79,7 +98,7 @@ browser.alarms.onAlarm.addListener(handleAlarm);
 
 /* interaction with content scripts */
 function sndMsg(id, a, d) {
-  //log(`send message to ${id} : action is ${a}, data is ${d}`);
+  log(`send message to ${id} : action is ${a}, data is ${d}`);
   return browser.tabs.sendMessage(id, {action: a, data: d});
 }
 
@@ -92,5 +111,5 @@ browser.browserAction.onClicked.addListener(handleClick);
 
 function onError(error) {
   err(`Error: ${error}`);
-  handleOrder()
+  openWkq()
 }
