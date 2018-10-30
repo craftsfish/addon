@@ -3,8 +3,37 @@ log("WeiKeQuan background is running");
 const ID_JD_DELIVER = 0;
 const ID_WKQ_DELIVER = 1;
 var map = [
-	[81529223718, ''],
-	[81506877675, ''],
+  [81206086865,541547145089],
+  [81526670018,541549335349],
+  [81206072660,541547145241],
+  [81527213124,541426977206],
+  [81202485534,541549335501],
+  [81205672340,541550150954],
+  [81526669700,541424774672],
+  [81525132451,541547673176],
+  [81522749578,541550151036],
+  [81524111011,541547673252],
+  [81525583301,541426977284],
+  [81203625589,541549335742],
+  [81525074148,541424775076],
+  [81203509974,541426205225],
+  [81525115437,541547145886],
+  [81203328791,541547673570],
+  [81202464242,541426977447],
+  [81203175156,541547673656],
+  [81523075790,541424775152],
+  [81522004257,541547673973],
+  [81523509548,541547673732],
+  [81202469204,541425855134],
+  [81520024523,541424775315],
+  [81521256965,541549336702],
+  [81521419500,541550151516],
+  [81520801956,541547146280],
+  [81518905551,541550151675],
+  [81517319203,541547674296],
+  [81515867371,541547146442],
+  [81515097835,541550152079],
+  [81509803808,541424775950],
 ];
 var cur_order = 0;
 var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
@@ -20,7 +49,7 @@ function delay_1() {
 
 function onWkqDeliveryError(error) {
   err(error);
-  browser.tabs.remove(Pages[ID_WKQ_DELIVER].tabId);
+  //browser.tabs.remove(Pages[ID_WKQ_DELIVER].tabId);
   startJdDelivery();
 }
 
@@ -53,7 +82,6 @@ function startWkqDelivery() {
     .then(delay_1)
     .then(wkq_select_supplier)
     .then(delay_1)
-    .then(wkq_remove_tab)
     .then(startJdDelivery)
     .catch(onWkqDeliveryError);
 }
@@ -94,10 +122,8 @@ function startJdDelivery() {
     .then(delay_1)
     .then(openSupplierCandidates)
     .then(selectSupplier)
-    .then(setExpressId)
-    .then(deliver)
     .then(delay_1)
-    .then(remove_jd_tab)
+    .then(setExpressId)
     .then(startWkqDelivery)
     .catch(onJdDeliveryError);
 }
