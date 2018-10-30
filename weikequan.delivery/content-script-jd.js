@@ -1,4 +1,4 @@
-console.log("Content script of JD is running");
+log("Content script of JD is running");
 
 function openSupplierCandidates(data)
 {
@@ -11,28 +11,28 @@ function openSupplierCandidates(data)
 
 function selectSupplier(data)
 {
-  var i
-  $("ul.ivu-select-dropdown-list li").each(function(){
-    if ($(this).text() == '中通速递') {
-      i = $(this)
-    }
-  });
-  i.click()
+  try {
+    $("ul.ivu-select-dropdown-list li").each(function(){
+      if ($(this).text() == '中通速递') {
+        $(this).click()
+      }
+    });
+  } catch (err) {
+    log(`Error: ${err}`)
+  }
   return Promise.resolve("ok");
 }
 
 function setExpressId(id)
 {
   $("div.out-delivery-input.ivu-input-wrapper.ivu-input-type input")[0].value = id;
-  console.log("设置物流单号为: " + id);
   return Promise.resolve("ok");
 }
 
 function deliver(data)
 {
-  //$("button.btn-so.ivu-btn.ivu-btn-primary")[0].click();
-  return Promise.reject(new Error("test"));
-  //return Promise.resolve("ok");
+  $("button.btn-so.ivu-btn.ivu-btn-primary")[0].click();
+  return Promise.resolve("ok");
 }
 
 function onMsg(m)
@@ -42,7 +42,7 @@ function onMsg(m)
   } else if (m.action == "selectSupplier") {
     return selectSupplier(m.data);
   } else if (m.action == "setExpressId") {
-    return setMark(m.data);
+    return setExpressId(m.data);
   } else if (m.action == "deliver") {
     return deliver(m.data);
   }

@@ -1,23 +1,19 @@
 log("WeiKeQuan background is running");
 
 var map = [
-	[81506877675, 99999999],
 	[81162947187, 55130],
+	[81506877675, ''],
 ];
 var cur_order = 0;
 var reg_jd_deliver = new RegExp("https:\/\/porder.shop.jd.com\/order\/singleOut\/.*\?selectedDelivery=2170$");
-var t = new Date();
+var tab = -1;
 var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
-var tab = 0;
-log(t.toDateString());
-log(t.toTimeString());
 
 function handleOrder() {
   cur_order++;
   if (cur_order >= map.length) {
     return
   }
-  log(`handling: ${cur_order}/${map.length}`);
   browser.tabs.create({url:"https://porder.shop.jd.com/order/singleOut/"+map[cur_order][0]+"?selectedDelivery=2170"});
 }
 
@@ -27,7 +23,7 @@ function createDelayPromise(timeout) {
 }
 
 function deliver() {
-  return sndMsg(tab, 'deliver', map[cur_order][1])
+  return sndMsg(tab, 'deliver', null)
 }
 
 function setExpressId() {
@@ -36,10 +32,6 @@ function setExpressId() {
 
 function selectSupplier() {
   return sndMsg(tab, 'selectSupplier', null)
-}
-
-function onSupplierCandidatesOpened() {
-  return createDelayPromise(5*1000);
 }
 
 function openSupplierCandidates() {
@@ -51,12 +43,13 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
     if (tabInfo.url.match(reg_jd_deliver) != null) {
       log("正在处理订单: " + map[cur_order][0] + ", 快递单号: " + map[cur_order][1]);
       tab = tabId
-      openSupplierCandidates()
-      .then(onSupplierCandidatesOpened)
+      createDelayPromise(5*1000)
+      .then(openSupplierCandidates)
       .then(selectSupplier)
       .then(setExpressId)
       .then(deliver)
-      .then(handleOrder);
+      .then(handleOrder)
+      .catch(onError);
     }
   }
 }
@@ -74,7 +67,7 @@ browser.alarms.create("my-periodic-alarm", {
 });
 
 function handleAlarm(alarmInfo) {
-  console.log("on alarm: " + alarmInfo.name);
+  //console.log("on alarm: " + alarmInfo.name);
   if (delayPromise.expireAt != -1) {
     if (new Date().getTime() > delayPromise.expireAt) {
       delayPromise.resolve("TimeOut");
@@ -86,7 +79,7 @@ browser.alarms.onAlarm.addListener(handleAlarm);
 
 /* interaction with content scripts */
 function sndMsg(id, a, d) {
-  log(`send message to ${id} : action is ${a}, data is ${d}`);
+  //log(`send message to ${id} : action is ${a}, data is ${d}`);
   return browser.tabs.sendMessage(id, {action: a, data: d});
 }
 
@@ -96,3 +89,8 @@ function handleClick() {
   handleOrder()
 }
 browser.browserAction.onClicked.addListener(handleClick);
+
+function onError(error) {
+  err(`Error: ${error}`);
+  handleOrder()
+}
