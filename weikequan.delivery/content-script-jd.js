@@ -25,7 +25,7 @@ function selectSupplier(data)
 
 function setExpressId(id)
 {
-  $("div.out-delivery-input.ivu-input-wrapper.ivu-input-type input")[0].value = id*10;
+  $("div.out-delivery-input.ivu-input-wrapper.ivu-input-type input")[0].value = id+'x';
   return Promise.resolve("ok");
 }
 
