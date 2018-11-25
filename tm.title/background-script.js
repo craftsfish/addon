@@ -6,6 +6,11 @@ var candidates = [
 
 /* browser action handling */
 function handleClick() {
-  log(candidates[0][0])
+  var _key = candidates[0][0]
+  var _elements = candidates[0][1]
+  _elements[0] = 'a'
+  _elements[1] = 'b'
+  log(_key)
+  log(_elements)
 }
 browser.browserAction.onClicked.addListener(handleClick);
