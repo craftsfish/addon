@@ -3,16 +3,16 @@ log("WeiKeQuan background is running");
 const ID_JD_DELIVER = 0;
 const ID_WKQ_DELIVER = 1;
 var map = [
-82348790848,
-81891939094,
-81890908436,
-82344746861,
-81888921333,
-82344148140,
-82343642532,
-82343040911,
-81893159930,
-82343036582,
+82278781092,
+81856020250,
+81851458998,
+81851518993,
+82279535564,
+82276651138,
+81850028754,
+81835248443,
+81849917077,
+82274498945,
 ];
 var cur_order = 0;
 var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
@@ -38,6 +38,7 @@ function wkq_remove_tab() {
 }
 
 function wkq_select_supplier() {
+  browser.tabs.remove(Pages[ID_JD_DELIVER].tabId);
   return sndMsg(ID_WKQ_DELIVER, 'select', cur_express_info)
 }
 
