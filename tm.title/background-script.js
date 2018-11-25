@@ -3,17 +3,7 @@ log("TMall Keyword background is running");
 const ID_TM_SEARCH = 0;
 var cur_order = 0;
 var candidates = [
-	['日本泰福高焖烧杯女焖烧壶闷烧罐锅不锈钢焖粥神器超长保温饭盒桶'],
-    ['焖烧杯'],
-    ['闷烧杯'],
-    ['焖烧杯 焖粥神器'],
-    ['焖烧杯女'],
-    ['闷烧杯 日本'],
-    ['保温桶'],
-    ['焖烧杯 焖粥神器 超长保温'],
-    ['焖烧杯 24小时 焖粥'],
-    ['保温桶女 便携 大容量'],
-    ['焖烧杯女 泰福高'],
+	['xxx'],
 ];
 
 function search() {
@@ -36,7 +26,11 @@ function processNext() {
   log(candidates.length)
   if (cur_order >= candidates.length) {
     log("Done")
-    log(candidates)
+    var result = ""
+    for (var i=0; i<candidates.length; i++) {
+      result += candidates[i][0] + ',' + candidates[i][1] + '\n'
+    }
+    console.log(result)
     return
   }
   browser.tabs.create({active:true, url:"https://s.taobao.com/"});
