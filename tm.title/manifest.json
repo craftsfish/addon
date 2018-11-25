@@ -31,7 +31,7 @@
       "js": ["jquery/jquery-1.4.min.js", "common.js"]
     },
     {
-      "matches": ["https://porder.shop.jd.com/order/singleOut/*?selectedDelivery=2170"],
+      "matches": ["https://s.taobao.com/*"],
       "js": ["content-script-tm.js"]
     }
   ]

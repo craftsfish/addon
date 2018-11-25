@@ -1,50 +1,36 @@
-log("Content script of JD is running");
+log("Content script of Taobao is running");
 
-function openSupplierCandidates(data)
+function search(data)
 {
-  if ($("div.ivu-select-selection").length == 1) {
-    $("div.ivu-select-selection")[0].click()
-    return Promise.resolve("ok");
-  }
-  return Promise.reject(new Error("打开物流供应商列表失败"));
+  $("#q")[0].value = data
+  $("#J_SearchForm").submit()
+  return Promise.resolve("ok");
 }
 
-function selectSupplier(data)
+function collectElements(data)
 {
-  try {
-    $("ul.ivu-select-dropdown-list li").each(function(){
-      if ($(this).text() == '中通速递') {
-        $(this).click()
+  var elements = []
+  $("span.H").each(function(){
+    var hit = false
+    for (var i=0; i<elements.length; i++) {
+      if ($(this).text() == elements[i]) {
+        hit = true
+        break
       }
-    });
-  } catch (err) {
-    log(`Error: ${err}`)
-  }
-  return Promise.resolve("ok");
-}
-
-function setExpressId(id)
-{
-  $("div.out-delivery-input.ivu-input-wrapper.ivu-input-type input")[0].value = id+'x';
-  return Promise.resolve("ok");
-}
-
-function deliver(data)
-{
-  $("button.btn-so.ivu-btn.ivu-btn-primary")[0].click();
-  return Promise.resolve("ok");
+    }
+    if (!hit) {
+      elements[elements.length] = $(this).text()
+    }
+  });
+  return Promise.resolve(elements);
 }
 
 function onMsg(m)
 {
-  if (m.action == "openSupplierCandidates") {
-    return openSupplierCandidates(m.data);
-  } else if (m.action == "selectSupplier") {
-    return selectSupplier(m.data);
-  } else if (m.action == "setExpressId") {
-    return setExpressId(m.data);
-  } else if (m.action == "deliver") {
-    return deliver(m.data);
+  if (m.action == "search") {
+    return search(m.data);
+  } else if (m.action == "collectElements") {
+    return collectElements(m.data);
   }
 }
 browser.runtime.onMessage.addListener(onMsg);
