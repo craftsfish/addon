@@ -30,14 +30,18 @@ function openDeliveryDialog() {
   return Promise.reject(new Error("打开发货对话框失败"));
 }
 
-function select(id)
+function select(data)
 {
+  var supplier = '中通快递'
+  if (data.supplier == '邮政EMS标准') {
+    supplier = '其他快递'
+  }
   $("iframe").contents().find("#ExpressCompany option").each(function(){
-    if ($(this).text() == '中通快递') {
+    if ($(this).text() == supplier) {
       $(this).attr('selected', 'selected')
     }
   });
-  $("iframe").contents().find(".input_305")[0].value = id;
+  $("iframe").contents().find(".input_305")[0].value = data.id;
   //$("iframe").contents().find("#btnSubmit")[0].click();
   return Promise.resolve("ok");
 }
