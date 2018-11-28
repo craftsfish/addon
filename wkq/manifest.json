@@ -1,7 +1,7 @@
 {
   "description": "Automatically delivery weikequan orders.",
   "manifest_version": 2,
-  "name": "WeiKeQuan Delivery",
+  "name": "WkqOrder",
   "version": "1.0",
   "icons": {
     "48": "icons/beasts-48.png"

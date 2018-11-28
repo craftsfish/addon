@@ -18,7 +18,9 @@ function init(id)
     }
   });
   $("#txtSearch")[0].value = '为绿厨具专营店';
-  $("#EndDate")[0].value = '2018-11-24 00:00';
+  var d = new Date()
+  var s_date = "" + d.getFullYear() + "-" + (d.getMonth()+1) + '-' +d.getDate() + ' 00:00'
+  $("#EndDate")[0].value = s_date;
   $("#fm")[0].submit();
   return Promise.resolve("ok");
 }
