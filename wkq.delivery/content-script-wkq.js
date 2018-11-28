@@ -33,9 +33,10 @@ function openDeliveryDialog() {
 function select(data)
 {
   var supplier = '中通快递'
-  if (data.supplier == '邮政EMS标准') {
+  if ((data.supplier == '邮政EMS标准') || (data.supplier == '邮政EMS经济')) {
     supplier = '其他快递'
   }
+  log(data.supplier)
   $("iframe").contents().find("#ExpressCompany option").each(function(){
     if ($(this).text() == supplier) {
       $(this).attr('selected', 'selected')
