@@ -22,6 +22,10 @@ function updateElements(elements) {
 
 function processNext() {
   cur_order++;
+  if (cur_order > 0) {
+    browser.tabs.remove(Pages[ID_TM_SEARCH].tabId);
+  }
+
   log(cur_order)
   log(candidates.length)
   if (cur_order >= candidates.length) {
