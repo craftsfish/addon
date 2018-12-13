@@ -36,7 +36,7 @@
     },
     {
       "matches": ["https://qqq.wkquan2018.com/Fine/VTask"],
-      "js": ["content-script-wkq.js"]
+      "js": ["jquery/jquery-1.4.min.js", "common.js", "content-script-wkq.js"]
     }
   ]
 }
