@@ -27,12 +27,8 @@
 
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["jquery/jquery-1.4.min.js", "common.js"]
-    },
-    {
       "matches": ["https://s.taobao.com/*"],
-      "js": ["content-script-tm.js"]
+      "js": ["jquery/jquery-1.4.min.js", "common.js", "content-script-tm.js"]
     }
   ]
 }

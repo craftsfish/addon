@@ -1,7 +1,9 @@
 log("TMall Candidate background is running");
 
 function onTmallTabFound(tabs) {
+  log('found')
   if (tabs.length == 1) {
+  	log('1 tab')
     browser.tabs.sendMessage(tabs[0].id, {action: 'collect', data: null});
   }
 }

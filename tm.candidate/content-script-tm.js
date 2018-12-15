@@ -1,4 +1,4 @@
-log("Content script of TMall of TMall Candidate is running");
+log("Content script of TMall Candidate is running");
 
 function collect(data)
 {
@@ -12,10 +12,12 @@ function collect(data)
     r += s + '\n'
   });
   console.log(r)
+  return Promise.resolve("ok");
 }
 
 function onMsg(m)
 {
+  log('onMsg')
   if (m.action == "collect") {
     return collect(m.data);
   }
