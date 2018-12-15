@@ -18,7 +18,7 @@
 
   "browser_action": {
     "default_icon": "icons/beasts-32.png",
-    "default_title": "WeiKeQuan"
+    "default_title": "WkqOrder"
   },
 
   "background": {
@@ -26,14 +26,6 @@
   },
 
   "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["jquery/jquery-1.4.min.js", "common.js"]
-    },
-    {
-      "matches": ["https://porder.shop.jd.com/order/singleOut/*?selectedDelivery=2170"],
-      "js": ["content-script-jd.js"]
-    },
     {
       "matches": ["https://qqq.wkquan2018.com/Fine/VTask"],
       "js": ["jquery/jquery-1.4.min.js", "common.js", "content-script-wkq.js"]
