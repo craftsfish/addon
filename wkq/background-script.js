@@ -24,19 +24,28 @@ function wkq_get_order_info() {
 }
 
 function wkq_on_init() {
-  return new Promise((resolve, reject) => {Pages[ID_WKQ_DELIVER].resolve = resolve;});
+  new Promise((resolve, reject) => {Pages[ID_WKQ_DELIVER].resolve = resolve;})
+    .then(wkq_load_content_script)
+    .then(wkq_get_order_info)
+  return true
 }
 
 function wkq_init() {
   return sndMsg(ID_WKQ_DELIVER, 'init', null)
 }
 
+function wkq_load_content_script() {
+  browser.tabs.executeScript(Pages[ID_WKQ_DELIVER].tabId, {file: '/common.js'})
+  browser.tabs.executeScript(Pages[ID_WKQ_DELIVER].tabId, {file: '/jquery/jquery-1.4.min.js'})
+  return browser.tabs.executeScript(Pages[ID_WKQ_DELIVER].tabId, {file: 'content-script-wkq.js'})
+}
+
 function startWkqDelivery() {
   browser.tabs.create({active:false, url:"https://qqq.wkquan2018.com/Fine/VTask"});
   return new Promise((resolve, reject) => {Pages[ID_WKQ_DELIVER].resolve = resolve;})
+    .then(wkq_load_content_script)
     .then(wkq_init)
     .then(wkq_on_init)
-    .then(wkq_get_order_info)
 }
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
