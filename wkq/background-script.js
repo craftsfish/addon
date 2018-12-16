@@ -3,6 +3,11 @@ log("WeiKeQuan background is running");
 const ID_WKQ_DELIVER = 0;
 var delayPromise = {expireAt: -1, resolve: undefined, reject: undefined};
 
+/* order handling */
+function onOrderError(error) {
+  err(`Error: ${error}`);
+}
+
 /*
  * Tabs Updated Handling
  */
@@ -24,20 +29,31 @@ function wkq_get_order_info() {
 }
 
 function wkq_on_init() {
-  new Promise((resolve, reject) => {Pages[ID_WKQ_DELIVER].resolve = resolve;})
+  return new Promise((resolve, reject) => {Pages[ID_WKQ_DELIVER].resolve = resolve;})
     .then(wkq_load_content_script)
     .then(wkq_get_order_info)
-  return true
 }
 
 function wkq_init() {
   return sndMsg(ID_WKQ_DELIVER, 'init', null)
 }
 
-function wkq_load_content_script() {
-  browser.tabs.executeScript(Pages[ID_WKQ_DELIVER].tabId, {file: '/common.js'})
-  browser.tabs.executeScript(Pages[ID_WKQ_DELIVER].tabId, {file: '/jquery/jquery-1.4.min.js'})
+function wkq_load_js_common() {
+  return browser.tabs.executeScript(Pages[ID_WKQ_DELIVER].tabId, {file: '/common.js'})
+}
+
+function wkq_load_js_jquery() {
+  return browser.tabs.executeScript(Pages[ID_WKQ_DELIVER].tabId, {file: '/jquery/jquery-1.4.min.js'})
+}
+
+function wkq_load_js_content() {
   return browser.tabs.executeScript(Pages[ID_WKQ_DELIVER].tabId, {file: 'content-script-wkq.js'})
+}
+
+function wkq_load_content_script() {
+  return wkq_load_js_common()
+    .then(wkq_load_js_jquery)
+    .then(wkq_load_js_content)
 }
 
 function startWkqDelivery() {
@@ -46,6 +62,7 @@ function startWkqDelivery() {
     .then(wkq_load_content_script)
     .then(wkq_init)
     .then(wkq_on_init)
+    .catch(onOrderError);
 }
 
 function onTabsUpdated(tabId, changeInfo, tabInfo) {
@@ -55,6 +72,7 @@ function onTabsUpdated(tabId, changeInfo, tabInfo) {
 
   var i = 0;
   for (i=0; i<Pages.length; i++) {
+    log('complete')
     if (tabInfo.url.match(Pages[i].regexp) != null) {
       Pages[i].tabId = tabId;
       if (Pages[i].resolve) {
