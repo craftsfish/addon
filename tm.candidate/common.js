@@ -8,3 +8,5 @@ function log(m) {
   var t = new Date().toTimeString();
   console.log(`[${t}]---->	${m}`);
 }
+
+log('common loaded')
